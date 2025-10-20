@@ -1,4 +1,8 @@
 import React, { useState } from 'react';
+import MonthView from './MonthView';
+import WeekView from './WeekView';
+import DayView from './DayView';
+import ListView from './ListView';
 
 function getDaysInMonth(year: number, month: number) {
   return new Date(year, month + 1, 0).getDate();
@@ -6,21 +10,6 @@ function getDaysInMonth(year: number, month: number) {
 
 type EventType = { time: string; text: string };
 type EventsMap = { [key: string]: Array<EventType> };
-
-interface CalendarViewProps {
-  currentYear: number;
-  currentMonth: number;
-  events: EventsMap;
-  setSelectedDay: (day: number) => void;
-  selectedDay: number | null;
-  monthNames: Array<string>;
-  daysInMonth: number;
-}
-
-interface WeekViewProps extends CalendarViewProps {
-  selectedWeek: number;
-  setSelectedWeek: (week: number) => void;
-}
 
 export default function Calendar() {
   const today = new Date();
@@ -35,8 +24,6 @@ export default function Calendar() {
 
   const daysInMonth = getDaysInMonth(currentYear, currentMonth);
   const monthNames = [...Array(12).keys()].map(key => new Date(0, key).toLocaleString('en', { month: 'long' }));
-
-  // prevMonth already defined above, remove duplicate
 
   function prevMonth() {
     setCurrentMonth(m => {
@@ -73,6 +60,16 @@ export default function Calendar() {
     }
   }
 
+  const sharedProps = {
+    currentYear,
+    currentMonth,
+    events,
+    setSelectedDay,
+    selectedDay,
+    monthNames,
+    daysInMonth,
+  };
+
   return (
     <div className="max-w-xl mx-auto mt-10 p-6 bg-white rounded shadow">
       <h1 className="text-2xl font-bold mb-4 text-center">Agenda</h1>
@@ -87,54 +84,12 @@ export default function Calendar() {
         <button onClick={() => setView('day')} className={`px-2 py-1 rounded ${view === 'day' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}>Day</button>
         <button onClick={() => setView('list')} className={`px-2 py-1 rounded ${view === 'list' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}>List</button>
       </div>
-      {/* Conditional rendering for views */}
-      {view === 'month' && (
-        <MonthView
-          currentYear={currentYear}
-          currentMonth={currentMonth}
-          events={events}
-          setSelectedDay={setSelectedDay}
-          selectedDay={selectedDay}
-          monthNames={monthNames}
-          daysInMonth={daysInMonth}
-        />
-      )}
-      {view === 'week' && (
-        <WeekView
-          currentYear={currentYear}
-          currentMonth={currentMonth}
-          events={events}
-          setSelectedDay={setSelectedDay}
-          selectedDay={selectedDay}
-          monthNames={monthNames}
-          selectedWeek={selectedWeek}
-          setSelectedWeek={setSelectedWeek}
-          daysInMonth={daysInMonth}
-        />
-      )}
-      {view === 'day' && (
-        <DayView
-          currentYear={currentYear}
-          currentMonth={currentMonth}
-          events={events}
-          setSelectedDay={setSelectedDay}
-          selectedDay={selectedDay}
-          monthNames={monthNames}
-          daysInMonth={daysInMonth}
-        />
-      )}
-      {view === 'list' && (
-        <ListView
-          currentYear={currentYear}
-          currentMonth={currentMonth}
-          events={events}
-          setSelectedDay={setSelectedDay}
-          selectedDay={selectedDay}
-          monthNames={monthNames}
-          daysInMonth={daysInMonth}
-        />
-      )}
-      {/* Event form stays for all views if a day is selected */}
+
+      {view === 'month' && <MonthView {...sharedProps} />}
+      {view === 'week' && <WeekView {...sharedProps} selectedWeek={selectedWeek} setSelectedWeek={setSelectedWeek} />}
+      {view === 'day' && <DayView {...sharedProps} />}
+      {view === 'list' && <ListView {...sharedProps} />}
+
       {selectedDay && (
         <form onSubmit={handleAddEvent} className="mb-4 p-4 bg-gray-50 rounded border">
           <h3 className="font-semibold mb-2">Add Event for {selectedDay} {monthNames[currentMonth]}</h3>
@@ -160,153 +115,4 @@ export default function Calendar() {
       )}
     </div>
   );
-// Remove extraneous closing bracket
-
-function MonthView({ currentYear, currentMonth, events, setSelectedDay, selectedDay, monthNames, daysInMonth }: CalendarViewProps) {
-  const firstDay = new Date(currentYear, currentMonth, 1).getDay();
-  const weeks = [];
-  let day = 1;
-  for (let w = 0; day <= daysInMonth; w++) {
-    const week = [];
-    for (let d = 0; d < 7; d++) {
-      if ((w === 0 && d < firstDay) || day > daysInMonth) {
-        week.push(null);
-      } else {
-        week.push(day++);
-      }
-    }
-    weeks.push(week);
-  }
-  return (
-    <div>
-      <table className="w-full mb-4">
-        <thead>
-          <tr>
-            {['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d => <th key={d} className="p-1 text-xs">{d}</th>)}
-          </tr>
-        </thead>
-        <tbody>
-          {weeks.map((week, i) => (
-            <tr key={i}>
-              {week.map((day, j) => (
-                <td key={j} className={`h-12 w-12 text-center border ${selectedDay === day ? 'bg-blue-100' : ''}`}>
-                  {day && (
-                    <button className="w-full h-full" onClick={() => setSelectedDay(day)}>{day}</button>
-                  )}
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      {selectedDay && (
-        <ul>
-          {(events[`${currentYear}-${currentMonth + 1}-${selectedDay}`] ?? []).map((event: EventType, idx: number) => (
-            <li key={idx} className="text-gray-700">
-              <span className="font-mono text-xs text-gray-500">{event.time}</span> {event.text}
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
-  );
-}
-
-function WeekView({ currentYear, currentMonth, events, setSelectedDay, selectedDay, monthNames, daysInMonth, selectedWeek, setSelectedWeek }: WeekViewProps) {
-  const firstDay = new Date(currentYear, currentMonth, 1).getDay();
-  const weeks = [];
-  let day = 1;
-  for (let w = 0; day <= daysInMonth; w++) {
-    const week = [];
-    for (let d = 0; d < 7; d++) {
-      if ((w === 0 && d < firstDay) || day > daysInMonth) {
-        week.push(null);
-      } else {
-        week.push(day++);
-      }
-    }
-    weeks.push(week);
-  }
-  const weekDays = weeks[selectedWeek] || [];
-  return (
-    <div>
-      <div className="mb-2 flex gap-2">
-        {weeks.map((_, i) => (
-          <button key={i} className={`px-2 py-1 rounded ${selectedWeek === i ? 'bg-blue-500 text-white' : 'bg-gray-200'}`} onClick={() => setSelectedWeek(i)}>
-            Week {i + 1}
-          </button>
-        ))}
-      </div>
-      <ul>
-        {weekDays.map((day, i) => day && (
-          <li key={i} className={`mb-2 p-2 rounded border ${selectedDay === day ? 'bg-blue-100' : ''}`}>
-            <button className="font-bold mr-2 text-blue-700 hover:underline" onClick={() => setSelectedDay(day)}>
-              {day} {monthNames[currentMonth]}
-            </button>
-            <ul className="ml-4">
-              {(events[`${currentYear}-${currentMonth + 1}-${day}`] ?? []).map((event: EventType, idx: number) => (
-                <li key={idx} className="text-gray-700">
-                  <span className="font-mono text-xs text-gray-500">{event.time}</span> {event.text}
-                </li>
-              ))}
-            </ul>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}
-
-function DayView({ currentYear, currentMonth, events, setSelectedDay, selectedDay, monthNames, daysInMonth }: CalendarViewProps) {
-  return (
-    <div>
-      <div className="mb-2 flex gap-2 flex-wrap">
-        {Array.from({ length: daysInMonth }, (_, i) => i + 1).map(day => (
-          <button key={day} className={`px-2 py-1 rounded ${selectedDay === day ? 'bg-blue-500 text-white' : 'bg-gray-200'}`} onClick={() => setSelectedDay(day)}>
-            {day}
-          </button>
-        ))}
-      </div>
-      {selectedDay && (
-        <ul>
-          {(events[`${currentYear}-${currentMonth + 1}-${selectedDay}`] ?? []).map((event: EventType, idx: number) => (
-            <li key={idx} className="text-gray-700">
-              <span className="font-mono text-xs text-gray-500">{event.time}</span> {event.text}
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
-  );
-}
-
-function ListView({ currentYear, currentMonth, events, setSelectedDay, selectedDay, monthNames, daysInMonth }: CalendarViewProps) {
-  return (
-    <div>
-      <h2 className="text-lg font-semibold mb-2">Days</h2>
-      <ul>
-        {Array.from({ length: daysInMonth }, (_, i) => i + 1).map(day => {
-          const key = `${currentYear}-${currentMonth + 1}-${day}`;
-          return (
-            <li key={day} className={`mb-2 p-2 rounded border ${selectedDay === day ? 'bg-blue-100' : ''}`}>
-              <button
-                className="font-bold mr-2 text-blue-700 hover:underline"
-                onClick={() => setSelectedDay(day)}
-              >
-                {day} {monthNames[currentMonth]}
-              </button>
-              <ul className="ml-4">
-                {(events[key] ?? []).map((event: EventType, idx: number) => (
-                  <li key={idx} className="text-gray-700">
-                    <span className="font-mono text-xs text-gray-500">{event.time}</span> {event.text}
-                  </li>
-                ))}
-              </ul>
-            </li>
-          );
-        })}
-      </ul>
-    </div>
-  );
-}
 }

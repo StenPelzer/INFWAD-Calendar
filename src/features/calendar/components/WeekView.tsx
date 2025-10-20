@@ -1,4 +1,4 @@
-import type { EventType, WeekViewProps } from './CalendarTypes';
+import type { EventType, WeekViewProps } from '../types/CalendarTypes';
 
 export default function WeekView({ currentYear, currentMonth, events, setSelectedDay, selectedDay, monthNames, daysInMonth, selectedWeek, setSelectedWeek }: WeekViewProps) {
   const firstDay = new Date(currentYear, currentMonth, 1).getDay();

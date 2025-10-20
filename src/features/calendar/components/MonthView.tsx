@@ -1,4 +1,4 @@
-import type { CalendarViewProps, EventType } from './CalendarTypes';
+import type { CalendarViewProps, EventType } from '../types/CalendarTypes';
 
 export default function MonthView({ currentYear, currentMonth, events, setSelectedDay, selectedDay, monthNames, daysInMonth }: CalendarViewProps) {
   const firstDay = new Date(currentYear, currentMonth, 1).getDay();

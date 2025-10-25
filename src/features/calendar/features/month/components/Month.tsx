@@ -53,11 +53,6 @@ export default function MonthView({
                           onClick={() => setSelectedDay(day)}
                         ></button>
                       </div>
-                      <div className="events">
-                        <div className="event">
-                          This is an event with a really long name
-                        </div>
-                      </div>
                     </div>
                   )}
                 </td>

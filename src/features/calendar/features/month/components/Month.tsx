@@ -42,7 +42,7 @@ export default function MonthView({
               {week.map((day, j) => (
                 <td
                   key={j}
-                  className={`calendar-day-wrapper border ${createEventOnDay === day ? 'bg-blue-100' : ''}`}
+                  className={`calendar-day-wrapper border ${day === null ? 'bg-blue-100' : ''}`}
                 >
                   {day && (
                     <div className="calendar-day">

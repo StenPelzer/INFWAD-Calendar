@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import Modal from '../../../components/Modal'
 import MonthView from '../features/month/components/Month'
 import WeekView from '../features/week/components/Week'
 import DayView from '../features/day/components/Day'
@@ -60,9 +61,15 @@ export default function Calendar() {
         ...prev,
         [key]: [...(prev[key] ?? []), { time: eventTime, text: eventText }],
       }))
-      setEventText('')
-      setEventTime('')
     }
+
+    closeCreateEventModal()
+  }
+
+  function closeCreateEventModal() {
+    setCreateEventOnDay(null)
+    setEventText('')
+    setEventTime('')
   }
 
   const sharedProps = {
@@ -135,7 +142,10 @@ export default function Calendar() {
       {view === 'day' && <DayView {...sharedProps} />}
       {view === 'list' && <ListView {...sharedProps} />}
 
-      {createEventOnDay && (
+      <Modal
+        isOpen={!!createEventOnDay}
+        onClose={() => closeCreateEventModal()}
+      >
         <form onSubmit={handleAddEvent}>
           <h3 className="font-semibold mb-2">
             Add Event for {createEventOnDay} {monthNames[currentMonth]}
@@ -157,7 +167,7 @@ export default function Calendar() {
             <button type="submit">Add</button>
           </div>
         </form>
-      )}
+      </Modal>
     </div>
   )
 }

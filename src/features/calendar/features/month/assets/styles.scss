@@ -1,0 +1,23 @@
+.month-view-container {
+  flex-grow: 1;
+
+  .calendar-day {
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+  }
+
+  .calendar-day-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+
+    .day-number {
+      line-height: 1;
+    }
+  }
+
+  .events {
+    flex-grow: 1;
+  }
+}

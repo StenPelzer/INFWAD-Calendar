@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
-import MonthView from './MonthView'
-import WeekView from './WeekView'
-import DayView from './DayView'
-import ListView from './ListView'
-import './styles.scss'
+import MonthView from '../features/month/components/Month'
+import WeekView from '../features/week/components/Week'
+import DayView from '../features/day/components/Day'
+import ListView from '../features/list/components/List'
+import '../assets/styles.scss'
 
 function getDaysInMonth(year: number, month: number) {
   return new Date(year, month + 1, 0).getDate()
@@ -96,33 +96,32 @@ export default function Calendar() {
         <span className="date-display">
           {monthNames[currentMonth]} {currentYear}
         </span>
-        <div className="spacer"></div>
-      </div>
-      <div>
-        <button
-          onClick={() => setView('month')}
-          className={`px-2 py-1 rounded ${view === 'month' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-        >
-          Month
-        </button>
-        <button
-          onClick={() => setView('week')}
-          className={`px-2 py-1 rounded ${view === 'week' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-        >
-          Week
-        </button>
-        <button
-          onClick={() => setView('day')}
-          className={`px-2 py-1 rounded ${view === 'day' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-        >
-          Day
-        </button>
-        <button
-          onClick={() => setView('list')}
-          className={`px-2 py-1 rounded ${view === 'list' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-        >
-          List
-        </button>
+        <div className="view-type-switcher">
+          <button
+            onClick={() => setView('month')}
+            className={`px-2 py-1 rounded ${view === 'month' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+          >
+            Month
+          </button>
+          <button
+            onClick={() => setView('week')}
+            className={`px-2 py-1 rounded ${view === 'week' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+          >
+            Week
+          </button>
+          <button
+            onClick={() => setView('day')}
+            className={`px-2 py-1 rounded ${view === 'day' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+          >
+            Day
+          </button>
+          <button
+            onClick={() => setView('list')}
+            className={`px-2 py-1 rounded ${view === 'list' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+          >
+            List
+          </button>
+        </div>
       </div>
 
       {view === 'month' && <MonthView {...sharedProps} />}

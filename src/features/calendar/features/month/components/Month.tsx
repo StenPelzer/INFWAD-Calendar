@@ -1,4 +1,5 @@
-import type { CalendarViewProps, EventType } from '../types/CalendarTypes'
+import type { CalendarViewProps, EventType } from '../../../types/CalendarTypes'
+import '../assets/styles.scss'
 
 export default function MonthView({
   currentYear,
@@ -24,7 +25,7 @@ export default function MonthView({
     weeks.push(week)
   }
   return (
-    <div>
+    <div className="month-view-container">
       <table className="w-full mb-4">
         <thead>
           <tr>
@@ -41,15 +42,18 @@ export default function MonthView({
               {week.map((day, j) => (
                 <td
                   key={j}
-                  className={`h-12 w-12 text-center border ${selectedDay === day ? 'bg-blue-100' : ''}`}
+                  className={`calendar-day-wrapper border ${selectedDay === day ? 'bg-blue-100' : ''}`}
                 >
                   {day && (
-                    <button
-                      className="w-full h-full"
-                      onClick={() => setSelectedDay(day)}
-                    >
-                      {day}
-                    </button>
+                    <div className="calendar-day">
+                      <div className="calendar-day-header">
+                        <button className="day-number">{day}</button>
+                        <button
+                          className="add-event"
+                          onClick={() => setSelectedDay(day)}
+                        ></button>
+                      </div>
+                    </div>
                   )}
                 </td>
               ))}

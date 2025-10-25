@@ -1,8 +1,9 @@
 import React, { useState } from 'react'
-import MonthView from './MonthView'
-import WeekView from './WeekView'
-import DayView from './DayView'
-import ListView from './ListView'
+import MonthView from '../features/month/components/Month'
+import WeekView from '../features/week/components/Week'
+import DayView from '../features/day/components/Day'
+import ListView from '../features/list/components/List'
+import '../assets/styles.scss'
 
 function getDaysInMonth(year: number, month: number) {
   return new Date(year, month + 1, 0).getDate()
@@ -19,7 +20,7 @@ export default function Calendar() {
   const [selectedDay, setSelectedDay] = useState<number | null>(null)
   const [eventText, setEventText] = useState('')
   const [eventTime, setEventTime] = useState('')
-  const [view, setView] = useState<'month' | 'week' | 'day' | 'list'>('week')
+  const [view, setView] = useState<'month' | 'week' | 'day' | 'list'>('month')
   const [selectedWeek, setSelectedWeek] = useState<number>(
     Math.floor((today.getDate() + today.getDay()) / 7),
   )
@@ -75,50 +76,52 @@ export default function Calendar() {
   }
 
   return (
-    <div className="max-w-xl mx-auto mt-10 p-6 bg-white rounded shadow">
-      <h1 className="text-2xl font-bold mb-4 text-center">Agenda</h1>
-      <div className="flex justify-between items-center mb-4">
-        <button
-          onClick={prevMonth}
-          className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
-        >
-          Prev
-        </button>
-        <span className="text-lg font-semibold">
+    <div className="calendar">
+      <h1 className="text-4xl font-bold mb-4 text-center">Calendar</h1>
+      <div className="date-header">
+        <div className="navigation">
+          <button
+            onClick={prevMonth}
+            className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
+          >
+            Prev
+          </button>
+          <button
+            onClick={nextMonth}
+            className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
+          >
+            Next
+          </button>
+        </div>
+        <span className="date-display">
           {monthNames[currentMonth]} {currentYear}
         </span>
-        <button
-          onClick={nextMonth}
-          className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
-        >
-          Next
-        </button>
-      </div>
-      <div className="mb-4 flex gap-2 justify-center">
-        <button
-          onClick={() => setView('month')}
-          className={`px-2 py-1 rounded ${view === 'month' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-        >
-          Month
-        </button>
-        <button
-          onClick={() => setView('week')}
-          className={`px-2 py-1 rounded ${view === 'week' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-        >
-          Week
-        </button>
-        <button
-          onClick={() => setView('day')}
-          className={`px-2 py-1 rounded ${view === 'day' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-        >
-          Day
-        </button>
-        <button
-          onClick={() => setView('list')}
-          className={`px-2 py-1 rounded ${view === 'list' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-        >
-          List
-        </button>
+        <div className="view-type-switcher">
+          <button
+            onClick={() => setView('month')}
+            className={`px-2 py-1 rounded ${view === 'month' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+          >
+            Month
+          </button>
+          <button
+            onClick={() => setView('week')}
+            className={`px-2 py-1 rounded ${view === 'week' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+          >
+            Week
+          </button>
+          <button
+            onClick={() => setView('day')}
+            className={`px-2 py-1 rounded ${view === 'day' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+          >
+            Day
+          </button>
+          <button
+            onClick={() => setView('list')}
+            className={`px-2 py-1 rounded ${view === 'list' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+          >
+            List
+          </button>
+        </div>
       </div>
 
       {view === 'month' && <MonthView {...sharedProps} />}
@@ -133,10 +136,7 @@ export default function Calendar() {
       {view === 'list' && <ListView {...sharedProps} />}
 
       {selectedDay && (
-        <form
-          onSubmit={handleAddEvent}
-          className="mb-4 p-4 bg-gray-50 rounded border"
-        >
+        <form onSubmit={handleAddEvent}>
           <h3 className="font-semibold mb-2">
             Add Event for {selectedDay} {monthNames[currentMonth]}
           </h3>
@@ -145,23 +145,16 @@ export default function Calendar() {
               type="time"
               value={eventTime}
               onChange={(e) => setEventTime(e.target.value)}
-              className="border rounded px-2 py-1 mr-2"
               required
             />
             <input
               type="text"
               value={eventText}
               onChange={(e) => setEventText(e.target.value)}
-              className="border rounded px-2 py-1"
               placeholder="Event description"
               required
             />
-            <button
-              type="submit"
-              className="ml-2 px-2 py-1 bg-blue-500 text-white rounded"
-            >
-              Add
-            </button>
+            <button type="submit">Add</button>
           </div>
         </form>
       )}

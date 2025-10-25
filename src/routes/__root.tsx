@@ -7,7 +7,9 @@ export const Route = createRootRoute({
   component: () => (
     <>
       <Header />
-      <Outlet />
+      <div className="page">
+        <Outlet />
+      </div>
       <TanStackDevtools
         config={{ position: 'bottom-right' }}
         plugins={[

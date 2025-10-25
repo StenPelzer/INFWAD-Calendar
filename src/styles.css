@@ -1,5 +1,9 @@
 @import 'tailwindcss';
 
+html {
+  height: 100%;
+}
+
 body {
   @apply m-0;
   font-family:
@@ -7,9 +11,21 @@ body {
     'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  height: 100%;
+  overflow: scroll;
 }
 
 code {
   font-family:
     source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+
+#app {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  .page {
+    flex-grow: 1;
+  }
 }

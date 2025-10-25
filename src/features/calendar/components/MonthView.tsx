@@ -24,7 +24,7 @@ export default function MonthView({
     weeks.push(week)
   }
   return (
-    <div>
+    <div className="month-view-container">
       <table className="w-full mb-4">
         <thead>
           <tr>

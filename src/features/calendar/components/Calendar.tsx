@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import Modal from '../../../components/Modal'
 import MonthView from '../features/month/components/Month'
 import WeekView from '../features/week/components/Week'
 import DayView from '../features/day/components/Day'
@@ -17,7 +18,7 @@ export default function Calendar() {
   const [currentMonth, setCurrentMonth] = useState(today.getMonth())
   const [currentYear, setCurrentYear] = useState(today.getFullYear())
   const [events, setEvents] = useState<EventsMap>({})
-  const [selectedDay, setSelectedDay] = useState<number | null>(null)
+  const [createEventOnDay, setCreateEventOnDay] = useState<number | null>(null)
   const [eventText, setEventText] = useState('')
   const [eventTime, setEventTime] = useState('')
   const [view, setView] = useState<'month' | 'week' | 'day' | 'list'>('month')
@@ -38,7 +39,7 @@ export default function Calendar() {
       }
       return m - 1
     })
-    setSelectedDay(null)
+    setCreateEventOnDay(null)
   }
 
   function nextMonth() {
@@ -49,28 +50,34 @@ export default function Calendar() {
       }
       return m + 1
     })
-    setSelectedDay(null)
+    setCreateEventOnDay(null)
   }
 
   function handleAddEvent(e: React.FormEvent) {
     e.preventDefault()
-    if (selectedDay && eventText.trim()) {
-      const key = `${currentYear}-${currentMonth + 1}-${selectedDay}`
+    if (createEventOnDay && eventText.trim()) {
+      const key = `${currentYear}-${currentMonth + 1}-${createEventOnDay}`
       setEvents((prev) => ({
         ...prev,
         [key]: [...(prev[key] ?? []), { time: eventTime, text: eventText }],
       }))
-      setEventText('')
-      setEventTime('')
     }
+
+    closeCreateEventModal()
+  }
+
+  function closeCreateEventModal() {
+    setCreateEventOnDay(null)
+    setEventText('')
+    setEventTime('')
   }
 
   const sharedProps = {
     currentYear,
     currentMonth,
     events,
-    setSelectedDay,
-    selectedDay,
+    setCreateEventOnDay,
+    createEventOnDay,
     monthNames,
     daysInMonth,
   }
@@ -135,10 +142,13 @@ export default function Calendar() {
       {view === 'day' && <DayView {...sharedProps} />}
       {view === 'list' && <ListView {...sharedProps} />}
 
-      {selectedDay && (
+      <Modal
+        isOpen={!!createEventOnDay}
+        onClose={() => closeCreateEventModal()}
+      >
         <form onSubmit={handleAddEvent}>
           <h3 className="font-semibold mb-2">
-            Add Event for {selectedDay} {monthNames[currentMonth]}
+            Add Event for {createEventOnDay} {monthNames[currentMonth]}
           </h3>
           <div className="mb-2">
             <input
@@ -157,7 +167,7 @@ export default function Calendar() {
             <button type="submit">Add</button>
           </div>
         </form>
-      )}
+      </Modal>
     </div>
   )
 }

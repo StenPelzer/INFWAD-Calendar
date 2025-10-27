@@ -5,8 +5,8 @@ export default function MonthView({
   currentYear,
   currentMonth,
   events,
-  setSelectedDay,
-  selectedDay,
+  setCreateEventOnDay,
+  createEventOnDay,
   monthNames,
   daysInMonth,
 }: CalendarViewProps) {
@@ -42,7 +42,7 @@ export default function MonthView({
               {week.map((day, j) => (
                 <td
                   key={j}
-                  className={`calendar-day-wrapper border ${selectedDay === day ? 'bg-blue-100' : ''}`}
+                  className={`calendar-day-wrapper border ${day === null ? 'bg-blue-100' : ''}`}
                 >
                   {day && (
                     <div className="calendar-day">
@@ -50,7 +50,7 @@ export default function MonthView({
                         <button className="day-number">{day}</button>
                         <button
                           className="add-event"
-                          onClick={() => setSelectedDay(day)}
+                          onClick={() => setCreateEventOnDay(day)}
                         ></button>
                       </div>
                     </div>
@@ -61,10 +61,11 @@ export default function MonthView({
           ))}
         </tbody>
       </table>
-      {selectedDay && (
+      {createEventOnDay && (
         <ul>
           {(
-            events[`${currentYear}-${currentMonth + 1}-${selectedDay}`] ?? []
+            events[`${currentYear}-${currentMonth + 1}-${createEventOnDay}`] ??
+            []
           ).map((event: EventType, idx: number) => (
             <li key={idx} className="text-gray-700">
               <span className="font-mono text-xs text-gray-500">

@@ -5,8 +5,8 @@ export interface CalendarViewProps {
   currentYear: number
   currentMonth: number
   events: EventsMap
-  setSelectedDay: (day: number) => void
-  selectedDay: number | null
+  setCreateEventOnDay: (day: number) => void
+  createEventOnDay: number | null
   monthNames: Array<string>
   daysInMonth: number
 }

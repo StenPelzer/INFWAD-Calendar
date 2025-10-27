@@ -4,8 +4,8 @@ export default function ListView({
   currentYear,
   currentMonth,
   events,
-  setSelectedDay,
-  selectedDay,
+  setCreateEventOnDay,
+  createEventOnDay,
   monthNames,
   daysInMonth,
 }: CalendarViewProps) {
@@ -18,11 +18,11 @@ export default function ListView({
           return (
             <li
               key={day}
-              className={`mb-2 p-2 rounded border ${selectedDay === day ? 'bg-blue-100' : ''}`}
+              className={`mb-2 p-2 rounded border ${createEventOnDay === day ? 'bg-blue-100' : ''}`}
             >
               <button
                 className="font-bold mr-2 text-blue-700 hover:underline"
-                onClick={() => setSelectedDay(day)}
+                onClick={() => setCreateEventOnDay(day)}
               >
                 {day} {monthNames[currentMonth]}
               </button>

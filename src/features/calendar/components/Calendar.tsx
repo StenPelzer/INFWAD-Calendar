@@ -30,24 +30,22 @@ export default function Calendar() {
   )
 
   function prevMonth() {
-    setCurrentMonth((m) => {
-      if (m === 0) {
-        setCurrentYear((y) => y - 1)
-        return 11
-      }
-      return m - 1
-    })
+    if (currentMonth === 0) {
+      setCurrentMonth(11)
+      setCurrentYear(currentYear - 1)
+    } else {
+      setCurrentMonth(currentMonth - 1)
+    }
     setCreateEventOnDay(null)
   }
 
   function nextMonth() {
-    setCurrentMonth((m) => {
-      if (m === 11) {
-        setCurrentYear((y) => y + 1)
-        return 0
-      }
-      return m + 1
-    })
+    if (currentMonth === 11) {
+      setCurrentMonth(0)
+      setCurrentYear(currentYear + 1)
+    } else {
+      setCurrentMonth(currentMonth + 1)
+    }
     setCreateEventOnDay(null)
   }
 

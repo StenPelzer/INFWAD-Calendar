@@ -1,4 +1,4 @@
-import type { EventType, WeekViewProps } from '../types/CalendarTypes'
+import type { EventType, WeekViewProps } from '../../../types/CalendarTypes'
 
 export default function WeekView({
   currentYear,
@@ -45,11 +45,15 @@ export default function WeekView({
             day && (
               <li
                 key={i}
-                className={`mb-2 p-2 rounded border ${createEventOnDay === day ? 'bg-blue-100' : ''}`}
+                className={`mb-2 p-2 rounded border ${createEventOnDay && createEventOnDay.getDate() === day ? 'bg-blue-100' : ''}`}
               >
                 <button
                   className="font-bold mr-2 text-blue-700 hover:underline"
-                  onClick={() => setCreateEventOnDay(day)}
+                  onClick={() =>
+                    setCreateEventOnDay(
+                      new Date(currentYear, currentMonth, day),
+                    )
+                  }
                 >
                   {day} {monthNames[currentMonth]}
                 </button>

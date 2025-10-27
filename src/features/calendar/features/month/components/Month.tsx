@@ -50,7 +50,11 @@ export default function MonthView({
                         <button className="day-number">{day}</button>
                         <button
                           className="add-event"
-                          onClick={() => setCreateEventOnDay(day)}
+                          onClick={() =>
+                            setCreateEventOnDay(
+                              new Date(currentYear, currentMonth, day),
+                            )
+                          }
                         ></button>
                       </div>
                     </div>
@@ -64,8 +68,9 @@ export default function MonthView({
       {createEventOnDay && (
         <ul>
           {(
-            events[`${currentYear}-${currentMonth + 1}-${createEventOnDay}`] ??
-            []
+            events[
+              `${createEventOnDay.getFullYear()}-${createEventOnDay.getMonth() + 1}-${createEventOnDay.getDate()}`
+            ] ?? []
           ).map((event: EventType, idx: number) => (
             <li key={idx} className="text-gray-700">
               <span className="font-mono text-xs text-gray-500">

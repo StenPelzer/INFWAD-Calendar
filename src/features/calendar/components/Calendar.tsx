@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import Modal from '../../../components/Modal'
 import MonthView from '../features/month/components/Month'
+import CreateEvent from '../features/event/components/CreateEvent'
 import WeekView from '../features/week/components/Week'
 import DayView from '../features/day/components/Day'
 import ListView from '../features/list/components/List'
@@ -18,7 +19,7 @@ export default function Calendar() {
   const [currentMonth, setCurrentMonth] = useState(today.getMonth())
   const [currentYear, setCurrentYear] = useState(today.getFullYear())
   const [events, setEvents] = useState<EventsMap>({})
-  const [createEventOnDay, setCreateEventOnDay] = useState<number | null>(null)
+  const [createEventOnDay, setCreateEventOnDay] = useState<Date | null>(null)
   const [eventText, setEventText] = useState('')
   const [eventTime, setEventTime] = useState('')
   const [view, setView] = useState<'month' | 'week' | 'day' | 'list'>('month')
@@ -56,7 +57,10 @@ export default function Calendar() {
   function handleAddEvent(e: React.FormEvent) {
     e.preventDefault()
     if (createEventOnDay && eventText.trim()) {
-      const key = `${currentYear}-${currentMonth + 1}-${createEventOnDay}`
+      const year = createEventOnDay.getFullYear()
+      const month = createEventOnDay.getMonth() + 1
+      const day = createEventOnDay.getDate()
+      const key = `${year}-${month}-${day}`
       setEvents((prev) => ({
         ...prev,
         [key]: [...(prev[key] ?? []), { time: eventTime, text: eventText }],
@@ -146,27 +150,16 @@ export default function Calendar() {
         isOpen={!!createEventOnDay}
         onClose={() => closeCreateEventModal()}
       >
-        <form onSubmit={handleAddEvent}>
-          <h3 className="font-semibold mb-2">
-            Add Event for {createEventOnDay} {monthNames[currentMonth]}
-          </h3>
-          <div className="mb-2">
-            <input
-              type="time"
-              value={eventTime}
-              onChange={(e) => setEventTime(e.target.value)}
-              required
-            />
-            <input
-              type="text"
-              value={eventText}
-              onChange={(e) => setEventText(e.target.value)}
-              placeholder="Event description"
-              required
-            />
-            <button type="submit">Add</button>
-          </div>
-        </form>
+        {createEventOnDay && (
+          <CreateEvent
+            selectedDate={createEventOnDay}
+            eventTime={eventTime}
+            setEventTime={setEventTime}
+            eventText={eventText}
+            setEventText={setEventText}
+            handleAddEvent={handleAddEvent}
+          />
+        )}
       </Modal>
     </div>
   )

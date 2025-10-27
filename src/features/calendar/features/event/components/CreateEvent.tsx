@@ -1,29 +1,28 @@
 import React from 'react'
-import useQueryGetMembers from '../hooks/QueryGetMembers'
 
 type CreateEventProps = {
   selectedDate: Date
   setSelectedDate: (date: Date | null) => void
-  eventTime: string
-  setEventTime: (val: string) => void
-  eventText: string
-  setEventText: (val: string) => void
-  handleAddEvent: (e: React.FormEvent) => void
+  handleAddEvent: (event: { time: string; text: string }) => void
 }
 
 function CreateEvent({
   selectedDate,
   setSelectedDate,
-  eventTime,
-  setEventTime,
-  eventText,
-  setEventText,
   handleAddEvent,
 }: CreateEventProps) {
-  const members = useQueryGetMembers()
+  const [eventText, setEventText] = React.useState('')
+  const [eventTime, setEventTime] = React.useState('')
+
+  function onSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    handleAddEvent({ time: eventTime, text: eventText })
+    setEventText('')
+    setEventTime('')
+  }
 
   return (
-    <form onSubmit={handleAddEvent}>
+    <form onSubmit={onSubmit}>
       <h3 className="font-semibold mb-2">
         Add Event for{' '}
         {selectedDate.getDate() +

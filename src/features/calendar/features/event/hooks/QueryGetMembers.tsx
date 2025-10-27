@@ -1,9 +1,4 @@
-type Member = {
-  id: string
-  name: string
-  color: string
-  email: string
-}
+import type { Member } from '../types/MemberType'
 
 export function useQueryGetMembers() {
   const members: Array<Member> = [
@@ -16,3 +11,4 @@ export function useQueryGetMembers() {
 }
 
 export default useQueryGetMembers
+export type { Member }

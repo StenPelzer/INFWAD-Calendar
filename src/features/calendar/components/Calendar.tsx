@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import Modal from '../../../components/Modal'
 import MonthView from '../features/month/components/Month'
 import CreateEvent from '../features/event/components/CreateEvent'
@@ -20,8 +20,6 @@ export default function Calendar() {
   const [currentYear, setCurrentYear] = useState(today.getFullYear())
   const [events, setEvents] = useState<EventsMap>({})
   const [createEventOnDay, setCreateEventOnDay] = useState<Date | null>(null)
-  const [eventText, setEventText] = useState('')
-  const [eventTime, setEventTime] = useState('')
   const [view, setView] = useState<'month' | 'week' | 'day' | 'list'>('month')
 
   const daysInMonth = getDaysInMonth(currentYear, currentMonth)
@@ -49,26 +47,22 @@ export default function Calendar() {
     setCreateEventOnDay(null)
   }
 
-  function handleAddEvent(e: React.FormEvent) {
-    e.preventDefault()
-    if (createEventOnDay && eventText.trim()) {
+  function handleAddEvent(event: { time: string; text: string }) {
+    if (createEventOnDay && event.text.trim()) {
       const year = createEventOnDay.getFullYear()
       const month = createEventOnDay.getMonth() + 1
       const day = createEventOnDay.getDate()
       const key = `${year}-${month}-${day}`
       setEvents((prev) => ({
         ...prev,
-        [key]: [...(prev[key] ?? []), { time: eventTime, text: eventText }],
+        [key]: [...(prev[key] ?? []), { time: event.time, text: event.text }],
       }))
     }
-
     closeCreateEventModal()
   }
 
   function closeCreateEventModal() {
     setCreateEventOnDay(null)
-    setEventText('')
-    setEventTime('')
   }
 
   const sharedProps = {
@@ -143,10 +137,6 @@ export default function Calendar() {
           <CreateEvent
             selectedDate={createEventOnDay}
             setSelectedDate={setCreateEventOnDay}
-            eventTime={eventTime}
-            setEventTime={setEventTime}
-            eventText={eventText}
-            setEventText={setEventText}
             handleAddEvent={handleAddEvent}
           />
         )}

@@ -23,9 +23,6 @@ export default function Calendar() {
   const [eventText, setEventText] = useState('')
   const [eventTime, setEventTime] = useState('')
   const [view, setView] = useState<'month' | 'week' | 'day' | 'list'>('month')
-  const [selectedWeek, setSelectedWeek] = useState<number>(
-    Math.floor((today.getDate() + today.getDay()) / 7),
-  )
 
   const daysInMonth = getDaysInMonth(currentYear, currentMonth)
   const monthNames = [...Array(12).keys()].map((key) =>
@@ -136,13 +133,7 @@ export default function Calendar() {
       </div>
 
       {view === 'month' && <MonthView {...sharedProps} />}
-      {view === 'week' && (
-        <WeekView
-          {...sharedProps}
-          selectedWeek={selectedWeek}
-          setSelectedWeek={setSelectedWeek}
-        />
-      )}
+      {view === 'week' && <WeekView {...sharedProps} />}
       {view === 'day' && <DayView {...sharedProps} />}
       {view === 'list' && <ListView {...sharedProps} />}
 

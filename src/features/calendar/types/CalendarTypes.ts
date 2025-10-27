@@ -10,8 +10,3 @@ export interface CalendarViewProps {
   monthNames: Array<string>
   daysInMonth: number
 }
-
-export interface WeekViewProps extends CalendarViewProps {
-  selectedWeek: number
-  setSelectedWeek: (week: number) => void
-}

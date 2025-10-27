@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import './Modal.scss'
+import '../assets/Modal.scss'
 
 interface ModalProps {
   isOpen: boolean

@@ -142,6 +142,7 @@ export default function Calendar() {
         {createEventOnDay && (
           <CreateEvent
             selectedDate={createEventOnDay}
+            setSelectedDate={setCreateEventOnDay}
             eventTime={eventTime}
             setEventTime={setEventTime}
             eventText={eventText}

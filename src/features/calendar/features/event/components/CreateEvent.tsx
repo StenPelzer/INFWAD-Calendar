@@ -66,7 +66,7 @@ function CreateEvent({ selectedDate, setSelectedDate }: CreateEventProps) {
           <input
             id="event-date"
             type="date"
-            value={selectedDate.toISOString().split('T')[0]}
+            value={selectedDate.toLocaleDateString('en-CA').split('T')[0]}
             onChange={(e) => {
               setSelectedDate(new Date(e.target.value))
             }}

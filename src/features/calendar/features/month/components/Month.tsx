@@ -52,7 +52,7 @@ export default function MonthView({
                           className="add-event"
                           onClick={() =>
                             setCreateEventOnDay(
-                              new Date(currentYear, currentMonth, day + 1),
+                              new Date(currentYear, currentMonth, day),
                             )
                           }
                         ></button>

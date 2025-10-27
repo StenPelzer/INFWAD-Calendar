@@ -1,4 +1,4 @@
-import type { CalendarViewProps, EventType } from '../../../types/CalendarTypes'
+import type { CalendarViewProps, EventType } from '../../../types/CalendarType'
 
 export default function DayView({
   currentYear,

@@ -1,24 +1,34 @@
 import React from 'react'
+import type { EventType } from '../types/EventType'
 
 type CreateEventProps = {
   selectedDate: Date
   setSelectedDate: (date: Date | null) => void
-  handleAddEvent: (event: { time: string; text: string }) => void
 }
 
-function CreateEvent({
-  selectedDate,
-  setSelectedDate,
-  handleAddEvent,
-}: CreateEventProps) {
+function CreateEvent({ selectedDate, setSelectedDate }: CreateEventProps) {
   const [eventText, setEventText] = React.useState('')
-  const [eventTime, setEventTime] = React.useState('')
+  const [eventTimeFrom, setEventTimeFrom] = React.useState('')
+  const [eventTimeTo, setEventTimeTo] = React.useState('')
+  const [eventTitle, setEventTitle] = React.useState('')
 
   function onSubmit(e: React.FormEvent) {
     e.preventDefault()
-    handleAddEvent({ time: eventTime, text: eventText })
+    handleAddEvent({
+      title: eventTitle,
+      date: selectedDate,
+      timeFrom: eventTimeFrom,
+      timeTo: eventTimeTo,
+      description: eventText,
+    })
+    setSelectedDate(null)
     setEventText('')
-    setEventTime('')
+    setEventTimeFrom('')
+    setEventTimeTo('')
+  }
+
+  function handleAddEvent(event: EventType) {
+    console.log(event)
   }
 
   return (
@@ -30,6 +40,22 @@ function CreateEvent({
           selectedDate.toLocaleString('default', { month: 'long' })}
       </h3>
       <div className="space-y-4">
+        <div>
+          <label
+            className="block text-sm font-medium mb-1"
+            htmlFor="event-title"
+          >
+            Title
+          </label>
+          <input
+            id="event-title"
+            type="text"
+            value={eventTitle}
+            onChange={(e) => setEventTitle(e.target.value)}
+            required
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
         <div>
           <label
             className="block text-sm font-medium mb-1"
@@ -59,8 +85,8 @@ function CreateEvent({
             <input
               id="event-time-from"
               type="time"
-              value={eventTime}
-              onChange={(e) => setEventTime(e.target.value)}
+              value={eventTimeFrom}
+              onChange={(e) => setEventTimeFrom(e.target.value)}
               required
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
@@ -75,8 +101,8 @@ function CreateEvent({
             <input
               id="event-time-to"
               type="time"
-              value={eventTime}
-              onChange={(e) => setEventTime(e.target.value)}
+              value={eventTimeTo}
+              onChange={(e) => setEventTimeTo(e.target.value)}
               required
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />

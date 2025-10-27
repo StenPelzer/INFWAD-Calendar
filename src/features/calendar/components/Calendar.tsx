@@ -6,19 +6,17 @@ import WeekView from '../features/week/components/Week'
 import DayView from '../features/day/components/Day'
 import ListView from '../features/list/components/List'
 import '../assets/styles.scss'
+import type { EventType } from '../features/event/types/EventType'
 
 function getDaysInMonth(year: number, month: number) {
   return new Date(year, month + 1, 0).getDate()
 }
 
-type EventType = { time: string; text: string }
-type EventsMap = { [key: string]: Array<EventType> }
-
 export default function Calendar() {
   const today = new Date()
   const [currentMonth, setCurrentMonth] = useState(today.getMonth())
   const [currentYear, setCurrentYear] = useState(today.getFullYear())
-  const [events, setEvents] = useState<EventsMap>({})
+  const [events, setEvents] = useState<Array<EventType>>([])
   const [createEventOnDay, setCreateEventOnDay] = useState<Date | null>(null)
   const [view, setView] = useState<'month' | 'week' | 'day' | 'list'>('month')
 
@@ -45,20 +43,6 @@ export default function Calendar() {
       setCurrentMonth(currentMonth + 1)
     }
     setCreateEventOnDay(null)
-  }
-
-  function handleAddEvent(event: { time: string; text: string }) {
-    if (createEventOnDay && event.text.trim()) {
-      const year = createEventOnDay.getFullYear()
-      const month = createEventOnDay.getMonth() + 1
-      const day = createEventOnDay.getDate()
-      const key = `${year}-${month}-${day}`
-      setEvents((prev) => ({
-        ...prev,
-        [key]: [...(prev[key] ?? []), { time: event.time, text: event.text }],
-      }))
-    }
-    closeCreateEventModal()
   }
 
   function closeCreateEventModal() {
@@ -137,7 +121,6 @@ export default function Calendar() {
           <CreateEvent
             selectedDate={createEventOnDay}
             setSelectedDate={setCreateEventOnDay}
-            handleAddEvent={handleAddEvent}
           />
         )}
       </Modal>

@@ -1,10 +1,9 @@
-export type EventType = { time: string; text: string }
-export type EventsMap = { [key: string]: Array<EventType> }
+import type { EventType } from '../features/event/types/EventType'
 
 export interface CalendarViewProps {
   currentYear: number
   currentMonth: number
-  events: EventsMap
+  events: Array<EventType>
   setCreateEventOnDay: (date: Date) => void
   createEventOnDay: Date | null
   monthNames: Array<string>

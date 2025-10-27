@@ -1,4 +1,4 @@
-export type Member = {
+export type MemberType = {
   id: string
   name: string
   color: string

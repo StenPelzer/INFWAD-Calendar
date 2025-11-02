@@ -1,5 +1,7 @@
 import React from 'react'
+import useQueryGetMembers from '../hooks/QueryGetMembers'
 import type { EventType } from '../types/EventType'
+import type { MemberType } from '../types/MemberType'
 import '../assets/styles.scss'
 
 type CreateEventProps = {
@@ -12,6 +14,13 @@ function CreateEvent({ selectedDate, setSelectedDate }: CreateEventProps) {
   const [eventTimeFrom, setEventTimeFrom] = React.useState('')
   const [eventTimeTo, setEventTimeTo] = React.useState('')
   const [eventTitle, setEventTitle] = React.useState('')
+  const [eventMembers, setEventMembers] = React.useState<Array<MemberType>>([])
+  const [members, setMembers] = React.useState<Array<MemberType>>([])
+
+  React.useEffect(() => {
+    const result = useQueryGetMembers()
+    setMembers(result.members)
+  }, [])
 
   function onSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -20,6 +29,7 @@ function CreateEvent({ selectedDate, setSelectedDate }: CreateEventProps) {
       date: selectedDate,
       timeFrom: eventTimeFrom,
       timeTo: eventTimeTo,
+      members: eventMembers,
       description: eventText,
     })
     setSelectedDate(null)
@@ -107,6 +117,40 @@ function CreateEvent({ selectedDate, setSelectedDate }: CreateEventProps) {
               required
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
+          </div>
+        </div>
+        <div>
+          <label
+            className="block text-sm font-medium mb-1"
+            htmlFor="event-members"
+          >
+            Members
+          </label>
+          <div className="member-checkbox-group">
+            {members.map((member) => (
+              <label
+                key={member.id}
+                className="member-checkbox"
+                style={{ ['--member-color' as any]: member.color }}
+              >
+                <input
+                  type="checkbox"
+                  value={member.id}
+                  checked={eventMembers.some((m) => m.id === member.id)}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      setEventMembers([...eventMembers, member])
+                    } else {
+                      setEventMembers(
+                        eventMembers.filter((m) => m.id !== member.id),
+                      )
+                    }
+                  }}
+                />
+                <div className="custom-checkbox"></div>
+                {member.name}
+              </label>
+            ))}
           </div>
         </div>
         <div>

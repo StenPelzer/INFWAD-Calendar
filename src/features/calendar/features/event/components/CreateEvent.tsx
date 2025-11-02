@@ -1,5 +1,6 @@
 import React from 'react'
 import type { EventType } from '../types/EventType'
+import '../assets/styles.scss'
 
 type CreateEventProps = {
   selectedDate: Date
@@ -32,7 +33,7 @@ function CreateEvent({ selectedDate, setSelectedDate }: CreateEventProps) {
   }
 
   return (
-    <form onSubmit={onSubmit}>
+    <form className="create-event-form" onSubmit={onSubmit}>
       <h3 className="font-semibold mb-2">
         Add Event for{' '}
         {selectedDate.getDate() +

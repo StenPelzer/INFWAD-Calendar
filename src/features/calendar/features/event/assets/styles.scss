@@ -11,14 +11,14 @@
 .member-checkbox-group {
   display: flex;
   flex-wrap: wrap;
-  gap: 5px 10px;
+  gap: 5px 15px;
 
   .member-checkbox {
     position: relative;
     display: flex;
     align-items: center;
     cursor: pointer;
-    gap: 3px;
+    gap: 5px;
 
     input {
       display: none;

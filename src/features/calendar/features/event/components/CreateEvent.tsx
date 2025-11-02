@@ -9,10 +9,19 @@ type CreateEventProps = {
   setSelectedDate: (date: Date | null) => void
 }
 
+function getCurrentTimeString() {
+  const now = new Date()
+  const hours = now.getHours().toString().padStart(2, '0')
+  const minutes = now.getMinutes().toString().padStart(2, '0')
+  return hours + ':' + minutes
+}
+
 function CreateEvent({ selectedDate, setSelectedDate }: CreateEventProps) {
   const [eventText, setEventText] = React.useState('')
-  const [eventTimeFrom, setEventTimeFrom] = React.useState('')
-  const [eventTimeTo, setEventTimeTo] = React.useState('')
+  const [eventTimeFrom, setEventTimeFrom] = React.useState(
+    getCurrentTimeString(),
+  )
+  const [eventTimeTo, setEventTimeTo] = React.useState(getCurrentTimeString())
   const [eventTitle, setEventTitle] = React.useState('')
   const [eventMembers, setEventMembers] = React.useState<Array<MemberType>>([])
   const [members, setMembers] = React.useState<Array<MemberType>>([])

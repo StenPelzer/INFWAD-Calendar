@@ -1,4 +1,5 @@
-import type { CalendarViewProps, EventType } from '../../../types/CalendarTypes'
+import type { CalendarViewProps } from '../../../types/CalendarType'
+import type { EventType } from '../../../features/event/types/EventType'
 import '../assets/styles.scss'
 
 export default function MonthView({
@@ -7,7 +8,6 @@ export default function MonthView({
   events,
   setCreateEventOnDay,
   createEventOnDay,
-  monthNames,
   daysInMonth,
 }: CalendarViewProps) {
   const firstDay = new Date(currentYear, currentMonth, 1).getDay()
@@ -50,7 +50,11 @@ export default function MonthView({
                         <button className="day-number">{day}</button>
                         <button
                           className="add-event"
-                          onClick={() => setCreateEventOnDay(day)}
+                          onClick={() =>
+                            setCreateEventOnDay(
+                              new Date(currentYear, currentMonth, day),
+                            )
+                          }
                         ></button>
                       </div>
                     </div>
@@ -63,15 +67,12 @@ export default function MonthView({
       </table>
       {createEventOnDay && (
         <ul>
-          {(
-            events[`${currentYear}-${currentMonth + 1}-${createEventOnDay}`] ??
-            []
-          ).map((event: EventType, idx: number) => (
+          {events.map((event: EventType, idx: number) => (
             <li key={idx} className="text-gray-700">
               <span className="font-mono text-xs text-gray-500">
-                {event.time}
+                {event.timeFrom} - {event.timeTo}
               </span>{' '}
-              {event.text}
+              {event.title}
             </li>
           ))}
         </ul>

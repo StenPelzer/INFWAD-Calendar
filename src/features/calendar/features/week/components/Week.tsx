@@ -1,4 +1,5 @@
-import type { EventType, WeekViewProps } from '../types/CalendarTypes'
+import { useState } from 'react'
+import type { CalendarViewProps, EventType } from '../../../types/CalendarType'
 
 export default function WeekView({
   currentYear,
@@ -8,9 +9,11 @@ export default function WeekView({
   createEventOnDay,
   monthNames,
   daysInMonth,
-  selectedWeek,
-  setSelectedWeek,
-}: WeekViewProps) {
+}: CalendarViewProps) {
+  const today = new Date()
+  const [selectedWeek, setSelectedWeek] = useState<number>(
+    Math.floor((today.getDate() + today.getDay()) / 7),
+  )
   const firstDay = new Date(currentYear, currentMonth, 1).getDay()
   const weeks = []
   let day = 1
@@ -45,11 +48,15 @@ export default function WeekView({
             day && (
               <li
                 key={i}
-                className={`mb-2 p-2 rounded border ${createEventOnDay === day ? 'bg-blue-100' : ''}`}
+                className={`mb-2 p-2 rounded border ${createEventOnDay && createEventOnDay.getDate() === day ? 'bg-blue-100' : ''}`}
               >
                 <button
                   className="font-bold mr-2 text-blue-700 hover:underline"
-                  onClick={() => setCreateEventOnDay(day)}
+                  onClick={() =>
+                    setCreateEventOnDay(
+                      new Date(currentYear, currentMonth, day),
+                    )
+                  }
                 >
                   {day} {monthNames[currentMonth]}
                 </button>

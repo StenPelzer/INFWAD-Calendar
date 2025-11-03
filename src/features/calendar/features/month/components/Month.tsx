@@ -26,7 +26,6 @@ export default function MonthView({
   }
 
   const events = getEventsForMonth(currentYear, currentMonth + 1)
-  console.log(events)
 
   return (
     <div className="month-view-container">

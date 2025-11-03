@@ -1,0 +1,32 @@
+@import '../_variables.scss';
+
+header,
+aside {
+  background: $green;
+}
+
+nav a:hover {
+  background: darken($green, 10%);
+}
+
+.logo {
+  display: block;
+  position: relative;
+
+  &::after {
+    content: '';
+    display: block;
+    aspect-ratio: 60 / 11;
+    width: 140px;
+    mask-image: url('../logo.svg');
+    mask-size: contain;
+    mask-repeat: no-repeat;
+    mask-position: center;
+    background-color: white;
+    transition: background-color 0.1s ease-in;
+  }
+
+  &:hover:after {
+    background-color: $blue;
+  }
+}

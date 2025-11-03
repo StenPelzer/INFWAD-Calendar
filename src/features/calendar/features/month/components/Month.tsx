@@ -26,6 +26,7 @@ export default function MonthView({
   }
 
   const events = getEventsForMonth(currentYear, currentMonth + 1)
+  console.log(events)
 
   return (
     <div className="month-view-container">
@@ -60,6 +61,18 @@ export default function MonthView({
                           }
                         ></button>
                       </div>
+                      <div className="events">
+                        {events
+                          .filter((e) => e.date.getDate() === day)
+                          .map((event: EventType, idx: number) => (
+                            <div key={idx} className="event">
+                              <span className="event-time">
+                                {event.timeFrom}
+                              </span>
+                              <span className="event-title">{event.title}</span>
+                            </div>
+                          ))}
+                      </div>
                     </div>
                   )}
                 </td>
@@ -68,18 +81,6 @@ export default function MonthView({
           ))}
         </tbody>
       </table>
-      {createEventOnDay && (
-        <ul>
-          {events.map((event: EventType, idx: number) => (
-            <li key={idx} className="text-gray-700">
-              <span className="font-mono text-xs text-gray-500">
-                {event.timeFrom} - {event.timeTo}
-              </span>{' '}
-              {event.title}
-            </li>
-          ))}
-        </ul>
-      )}
     </div>
   )
 }

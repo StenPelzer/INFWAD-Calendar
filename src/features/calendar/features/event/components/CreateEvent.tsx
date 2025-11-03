@@ -49,6 +49,10 @@ function CreateEvent({ selectedDate, setSelectedDate }: CreateEventProps) {
   }
 
   function handleAddEvent(event: EventType) {
+    const date = event.date
+    date.setHours(12, 0, 0, 0) // Temporary fix for timezone issues
+    event.date = date // Temporary fix for timezone issues
+    console.log(event)
     addEvent(event)
   }
 

@@ -1,6 +1,5 @@
 import { getEventsForDay } from '../../event/services/events.service'
 import type { CalendarViewProps } from '../../../types/CalendarType'
-import type { EventType } from '../../../features/event/types/EventType'
 
 export default function DayView({
   currentYear,
@@ -31,18 +30,6 @@ export default function DayView({
           </button>
         ))}
       </div>
-      {createEventOnDay && (
-        <ul>
-          {events.map((event: EventType, idx: number) => (
-            <li key={idx} className="text-gray-700">
-              <span className="font-mono text-xs text-gray-500">
-                {event.timeFrom} - {event.timeTo}
-              </span>{' '}
-              {event.description}
-            </li>
-          ))}
-        </ul>
-      )}
     </div>
   )
 }

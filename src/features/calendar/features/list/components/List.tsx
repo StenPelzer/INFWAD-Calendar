@@ -10,7 +10,7 @@ export default function ListView({
   monthNames,
   daysInMonth,
 }: CalendarViewProps) {
-  const events = getEventsForMonth(currentYear, currentMonth)
+  const events = getEventsForMonth(currentYear, currentMonth + 1)
 
   return (
     <div>
@@ -31,16 +31,18 @@ export default function ListView({
               >
                 {day} {monthNames[currentMonth]}
               </button>
-              <ul className="ml-4">
-                {events.map((event: EventType, idx: number) => (
-                  <li key={idx} className="text-gray-700">
-                    <span className="font-mono text-xs text-gray-500">
-                      {event.timeFrom} - {event.timeTo}
-                    </span>{' '}
-                    {event.description}
-                  </li>
-                ))}
-              </ul>
+              <div className="events">
+                {events
+                  .filter((e) => e.date.getDate() === day)
+                  .map((event: EventType, idx: number) => (
+                    <div key={idx} className="event">
+                      <span className="event-time">
+                        {event.timeFrom} - {event.timeTo}
+                      </span>
+                      <span className="event-title">{event.title}</span>
+                    </div>
+                  ))}
+              </div>
             </li>
           )
         })}

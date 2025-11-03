@@ -1,4 +1,5 @@
 import type { EventType } from '../types/EventType'
+import type { MemberType } from '../types/MemberType'
 
 const STORAGE_KEY = 'events'
 
@@ -70,11 +71,26 @@ export function getAllEvents(): Array<EventType> {
   return stored.map(storedToEvent)
 }
 
+export function getAllEventsForSelectedMembers(
+  selectedMembers?: Array<MemberType>,
+): Array<EventType> {
+  let events = getAllEvents()
+  if (selectedMembers) {
+    events = events.filter((event) =>
+      event.members.some((member) =>
+        selectedMembers.some((sm) => sm.id === member.id),
+      ),
+    )
+  }
+  return events
+}
+
 export function getEventsForMonth(
   year: number,
   month: number,
+  selectedMembers?: Array<MemberType>,
 ): Array<EventType> {
-  const events = getAllEvents()
+  const events = getAllEventsForSelectedMembers(selectedMembers)
   return events.filter((e) => {
     const d = e.date
     return d.getFullYear() === year && d.getMonth() + 1 === month
@@ -85,8 +101,9 @@ export function getEventsForDay(
   year: number,
   month: number,
   day: number,
+  selectedMembers?: Array<MemberType>,
 ): Array<EventType> {
-  const events = getAllEvents()
+  const events = getAllEventsForSelectedMembers(selectedMembers)
   return events.filter((e) => {
     const d = e.date
     return (
@@ -97,17 +114,13 @@ export function getEventsForDay(
   })
 }
 
-/**
- * Get events for a week inside a given month.
- * weekIndex is zero-based; weeks are built starting with Sunday (0) like the UI.
- */
 export function getEventsForWeek(
   year: number,
   month: number,
   weekIndex: number,
+  selectedMembers?: Array<MemberType>,
 ): Array<EventType> {
-  // build weeks for the month similar to Week component
-  const daysInMonth = new Date(year, month, 0).getDate() // month is 1-12
+  const daysInMonth = new Date(year, month, 0).getDate()
   const firstDay = new Date(year, month - 1, 1).getDay()
   const weeks: Array<Array<number | null>> = []
   let day = 1
@@ -127,7 +140,7 @@ export function getEventsForWeek(
   const daysInTarget = targetWeek.filter((v): v is number => v !== null)
   if (daysInTarget.length === 0) return []
 
-  const events = getAllEvents()
+  const events = getAllEventsForSelectedMembers(selectedMembers)
   return events.filter((e) => {
     const d = e.date
     return (

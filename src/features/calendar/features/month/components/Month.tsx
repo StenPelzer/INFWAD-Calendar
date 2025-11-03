@@ -25,11 +25,10 @@ export default function MonthView({
     weeks.push(week)
   }
 
-  const events = getEventsForMonth(currentYear, currentMonth + 1).filter(
-    (event) =>
-      event.members.some((member) =>
-        selectedMembers.some((m) => m.id === member.id),
-      ),
+  const events = getEventsForMonth(
+    currentYear,
+    currentMonth + 1,
+    selectedMembers,
   )
 
   return (

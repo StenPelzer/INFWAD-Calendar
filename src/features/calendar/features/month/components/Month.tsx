@@ -31,6 +31,29 @@ export default function MonthView({
     selectedMembers,
   )
 
+  function getEventBackground(event: EventType): string {
+    const selectedEventMembers = event.members.filter((member) =>
+      selectedMembers.some((sm) => sm.id === member.id),
+    )
+
+    if (selectedEventMembers.length === 0) {
+      return ''
+    }
+
+    if (selectedEventMembers.length === 1) {
+      return selectedEventMembers[0].color
+    }
+
+    let linearGradient = 'linear-gradient(130deg, '
+    const colorStops = selectedEventMembers.map((member, index) => {
+      const percentageStart = (index / selectedEventMembers.length) * 100
+      const percentageEnd = ((index + 1) / selectedEventMembers.length) * 100
+      return `${member.color} ${percentageStart}%, ${member.color} ${percentageEnd}%`
+    })
+    linearGradient += colorStops.join(', ') + ')'
+    return linearGradient
+  }
+
   return (
     <div className="month-view-container">
       <table className="w-full">
@@ -68,7 +91,11 @@ export default function MonthView({
                         {events
                           .filter((e) => e.date.getDate() === day)
                           .map((event: EventType, idx: number) => (
-                            <div key={idx} className="event">
+                            <div
+                              key={idx}
+                              className="event"
+                              style={{ background: getEventBackground(event) }}
+                            >
                               <span className="event-time">
                                 {event.timeFrom}
                               </span>

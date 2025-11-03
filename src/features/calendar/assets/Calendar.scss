@@ -88,6 +88,7 @@ table {
     border-radius: 0.5rem;
     padding: 0.125rem 0.25rem;
     font-size: 0.75rem;
+    font-weight: bold;
     margin-top: 0.125rem;
     width: 100%;
     -webkit-line-clamp: 1;
@@ -96,6 +97,11 @@ table {
     text-overflow: ellipsis;
     display: -webkit-box;
     -webkit-box-orient: vertical;
+    text-shadow:
+      1px 0 0 black,
+      0 -1px 0 black,
+      0 1px 0 black,
+      -1px 0 0 black;
 
     .event-time {
       margin-right: 6px;

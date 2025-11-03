@@ -1,4 +1,3 @@
-import React from 'react'
 import useQueryGetMembers from '../features/event/hooks/QueryGetMembers'
 import '../assets/MemberSelector.scss'
 import type { MemberType } from '../features/event/types/MemberType'
@@ -6,12 +5,14 @@ import type { MemberType } from '../features/event/types/MemberType'
 interface MemberSelectorProps {
   selectedMembers: Array<MemberType>
   onChange: (selected: Array<MemberType>) => void
+  header?: string
 }
 
-const MemberSelector: React.FC<MemberSelectorProps> = ({
+function MemberSelector({
   selectedMembers,
   onChange,
-}) => {
+  header = '',
+}: MemberSelectorProps) {
   const { members } = useQueryGetMembers()
 
   const toggleMember = (member: MemberType) => {
@@ -24,7 +25,7 @@ const MemberSelector: React.FC<MemberSelectorProps> = ({
 
   return (
     <div className="member-selector">
-      <h3>Members</h3>
+      {header && <h3>Members</h3>}
       <div className="member-checkbox-group">
         {members.map((member) => (
           <label

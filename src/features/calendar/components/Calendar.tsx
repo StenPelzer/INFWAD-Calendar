@@ -65,6 +65,7 @@ export default function Calendar() {
       <MemberSelector
         selectedMembers={selectedMembers}
         onChange={setSelectedMembers}
+        header="Members"
       />
       <div className="calendar">
         <div className="date-header">

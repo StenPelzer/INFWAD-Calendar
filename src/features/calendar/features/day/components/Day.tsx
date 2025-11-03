@@ -8,11 +8,13 @@ export default function DayView({
   createEventOnDay,
   monthNames,
   daysInMonth,
+  selectedMembers,
 }: CalendarViewProps) {
   const events = getEventsForDay(
     currentYear,
     currentMonth + 1,
     createEventOnDay ? createEventOnDay.getDate() : 0,
+    selectedMembers,
   )
 
   return (

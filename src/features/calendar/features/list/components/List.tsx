@@ -9,8 +9,13 @@ export default function ListView({
   createEventOnDay,
   monthNames,
   daysInMonth,
+  selectedMembers,
 }: CalendarViewProps) {
-  const events = getEventsForMonth(currentYear, currentMonth + 1)
+  const events = getEventsForMonth(
+    currentYear,
+    currentMonth + 1,
+    selectedMembers,
+  )
 
   return (
     <div>

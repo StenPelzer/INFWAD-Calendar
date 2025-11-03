@@ -10,6 +10,7 @@ export default function WeekView({
   createEventOnDay,
   monthNames,
   daysInMonth,
+  selectedMembers,
 }: CalendarViewProps) {
   const today = new Date()
   const [selectedWeek, setSelectedWeek] = useState<number>(
@@ -31,7 +32,12 @@ export default function WeekView({
   }
   const weekDays = weeks[selectedWeek] || []
 
-  const events = getEventsForWeek(currentYear, currentMonth + 1, selectedWeek)
+  const events = getEventsForWeek(
+    currentYear,
+    currentMonth + 1,
+    selectedWeek,
+    selectedMembers,
+  )
 
   return (
     <div>

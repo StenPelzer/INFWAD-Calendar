@@ -1,14 +1,21 @@
-import type { CalendarViewProps, EventType } from '../../../types/CalendarType'
+import { getEventsForDay } from '../../event/services/events.service'
+import type { CalendarViewProps } from '../../../types/CalendarType'
+import type { EventType } from '../../../features/event/types/EventType'
 
 export default function DayView({
   currentYear,
   currentMonth,
-  events,
   setCreateEventOnDay,
   createEventOnDay,
   monthNames,
   daysInMonth,
 }: CalendarViewProps) {
+  const events = getEventsForDay(
+    currentYear,
+    currentMonth + 1,
+    createEventOnDay ? createEventOnDay.getDate() : 0,
+  )
+
   return (
     <div>
       <div className="mb-2 flex gap-2 flex-wrap">
@@ -26,16 +33,12 @@ export default function DayView({
       </div>
       {createEventOnDay && (
         <ul>
-          {(
-            events[
-              `${createEventOnDay.getFullYear()}-${createEventOnDay.getMonth() + 1}-${createEventOnDay.getDate()}`
-            ] ?? []
-          ).map((event: EventType, idx: number) => (
+          {events.map((event: EventType, idx: number) => (
             <li key={idx} className="text-gray-700">
               <span className="font-mono text-xs text-gray-500">
-                {event.time}
+                {event.timeFrom} - {event.timeTo}
               </span>{' '}
-              {event.text}
+              {event.description}
             </li>
           ))}
         </ul>

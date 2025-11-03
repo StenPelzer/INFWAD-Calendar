@@ -1,3 +1,4 @@
+import { getEventsForMonth } from '../../event/services/events.service'
 import type { CalendarViewProps } from '../../../types/CalendarType'
 import type { EventType } from '../../../features/event/types/EventType'
 import '../assets/styles.scss'
@@ -5,7 +6,6 @@ import '../assets/styles.scss'
 export default function MonthView({
   currentYear,
   currentMonth,
-  events,
   setCreateEventOnDay,
   createEventOnDay,
   daysInMonth,
@@ -24,6 +24,9 @@ export default function MonthView({
     }
     weeks.push(week)
   }
+
+  const events = getEventsForMonth(currentYear, currentMonth + 1)
+
   return (
     <div className="month-view-container">
       <table className="w-full">

@@ -26,7 +26,7 @@ export default function MonthView({
   }
   return (
     <div className="month-view-container">
-      <table className="w-full mb-4">
+      <table className="w-full">
         <thead>
           <tr>
             {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((d) => (

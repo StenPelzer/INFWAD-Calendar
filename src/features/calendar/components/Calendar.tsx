@@ -61,7 +61,6 @@ export default function Calendar() {
 
   return (
     <div className="calendar">
-      <h1 className="text-4xl font-bold mb-4 text-center">Calendar</h1>
       <div className="date-header">
         <div className="navigation">
           <button

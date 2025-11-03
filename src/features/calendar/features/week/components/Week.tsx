@@ -1,10 +1,11 @@
 import { useState } from 'react'
-import type { CalendarViewProps, EventType } from '../../../types/CalendarType'
+import { getEventsForWeek } from '../../event/services/events.service'
+import type { CalendarViewProps } from '../../../types/CalendarType'
+import type { EventType } from '../../../features/event/types/EventType'
 
 export default function WeekView({
   currentYear,
   currentMonth,
-  events,
   setCreateEventOnDay,
   createEventOnDay,
   monthNames,
@@ -29,6 +30,9 @@ export default function WeekView({
     weeks.push(week)
   }
   const weekDays = weeks[selectedWeek] || []
+
+  const events = getEventsForWeek(currentYear, currentMonth + 1, selectedWeek)
+
   return (
     <div>
       <div className="mb-2 flex gap-2">
@@ -60,18 +64,18 @@ export default function WeekView({
                 >
                   {day} {monthNames[currentMonth]}
                 </button>
-                <ul className="ml-4">
-                  {(
-                    events[`${currentYear}-${currentMonth + 1}-${day}`] ?? []
-                  ).map((event: EventType, idx: number) => (
-                    <li key={idx} className="text-gray-700">
-                      <span className="font-mono text-xs text-gray-500">
-                        {event.time}
-                      </span>{' '}
-                      {event.text}
-                    </li>
-                  ))}
-                </ul>
+                <div className="events">
+                  {events
+                    .filter((e) => e.date.getDate() === day)
+                    .map((event: EventType, idx: number) => (
+                      <div key={idx} className="event">
+                        <span className="event-time">
+                          {event.timeFrom} - {event.timeTo}
+                        </span>
+                        <span className="event-title">{event.title}</span>
+                      </div>
+                    ))}
+                </div>
               </li>
             ),
         )}

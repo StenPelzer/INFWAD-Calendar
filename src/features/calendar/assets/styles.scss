@@ -89,6 +89,10 @@ table {
     text-overflow: ellipsis;
     display: -webkit-box;
     -webkit-box-orient: vertical;
+
+    .event-time {
+      margin-right: 6px;
+    }
   }
 }
 

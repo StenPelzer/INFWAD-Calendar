@@ -1,5 +1,6 @@
 import React from 'react'
 import useQueryGetMembers from '../hooks/QueryGetMembers'
+import { addEvent } from '../services/events.service'
 import type { EventType } from '../types/EventType'
 import type { MemberType } from '../types/MemberType'
 import '../assets/styles.scss'
@@ -48,7 +49,10 @@ function CreateEvent({ selectedDate, setSelectedDate }: CreateEventProps) {
   }
 
   function handleAddEvent(event: EventType) {
-    console.log(event)
+    const date = event.date
+    date.setHours(12, 0, 0, 0) // Temporary fix for timezone issues
+    event.date = date // Temporary fix for timezone issues
+    addEvent(event)
   }
 
   return (

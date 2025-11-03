@@ -7,8 +7,8 @@ export default function MonthView({
   currentYear,
   currentMonth,
   setCreateEventOnDay,
-  createEventOnDay,
   daysInMonth,
+  selectedMembers,
 }: CalendarViewProps) {
   const firstDay = new Date(currentYear, currentMonth, 1).getDay()
   const weeks = []
@@ -25,7 +25,12 @@ export default function MonthView({
     weeks.push(week)
   }
 
-  const events = getEventsForMonth(currentYear, currentMonth + 1)
+  const events = getEventsForMonth(currentYear, currentMonth + 1).filter(
+    (event) =>
+      event.members.some((member) =>
+        selectedMembers.some((m) => m.id === member.id),
+      ),
+  )
 
   return (
     <div className="month-view-container">

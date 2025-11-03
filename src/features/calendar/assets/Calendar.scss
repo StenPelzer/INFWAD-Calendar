@@ -1,6 +1,11 @@
 @import '../../../_variables.scss';
 
 // General
+.calendar-wrapper {
+  display: flex;
+  width: 100%;
+}
+
 .calendar {
   display: flex;
   flex-direction: column;
@@ -33,6 +38,8 @@ table {
   grid-template-columns: 1fr auto 1fr;
   gap: 1rem;
   padding: 0.5rem;
+  height: $headerHeight;
+  align-items: center;
 
   .navigation {
     display: flex;
@@ -81,6 +88,7 @@ table {
     border-radius: 0.5rem;
     padding: 0.125rem 0.25rem;
     font-size: 0.75rem;
+    font-weight: bold;
     margin-top: 0.125rem;
     width: 100%;
     -webkit-line-clamp: 1;
@@ -89,6 +97,11 @@ table {
     text-overflow: ellipsis;
     display: -webkit-box;
     -webkit-box-orient: vertical;
+    text-shadow:
+      1px 0 0 black,
+      0 -1px 0 black,
+      0 1px 0 black,
+      -1px 0 0 black;
 
     .event-time {
       margin-right: 6px;

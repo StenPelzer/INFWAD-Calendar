@@ -5,8 +5,9 @@ import CreateEvent from '../features/event/components/CreateEvent'
 import WeekView from '../features/week/components/Week'
 import DayView from '../features/day/components/Day'
 import ListView from '../features/list/components/List'
-import '../assets/styles.scss'
-import type { EventType } from '../features/event/types/EventType'
+import MemberSelector from './MemberSelector'
+import '../assets/Calendar.scss'
+import type { MemberType } from '../features/event/types/MemberType'
 
 function getDaysInMonth(year: number, month: number) {
   return new Date(year, month + 1, 0).getDate()
@@ -16,7 +17,7 @@ export default function Calendar() {
   const today = new Date()
   const [currentMonth, setCurrentMonth] = useState(today.getMonth())
   const [currentYear, setCurrentYear] = useState(today.getFullYear())
-  const [events, setEvents] = useState<Array<EventType>>([])
+  const [selectedMembers, setSelectedMembers] = useState<Array<MemberType>>([])
   const [createEventOnDay, setCreateEventOnDay] = useState<Date | null>(null)
   const [view, setView] = useState<'month' | 'week' | 'day' | 'list'>('month')
 
@@ -52,77 +53,84 @@ export default function Calendar() {
   const sharedProps = {
     currentYear,
     currentMonth,
-    events,
     setCreateEventOnDay,
     createEventOnDay,
     monthNames,
     daysInMonth,
+    selectedMembers,
   }
 
   return (
-    <div className="calendar">
-      <div className="date-header">
-        <div className="navigation">
-          <button
-            onClick={prevMonth}
-            className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
-          >
-            Prev
-          </button>
-          <button
-            onClick={nextMonth}
-            className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
-          >
-            Next
-          </button>
+    <div className="calendar-wrapper">
+      <MemberSelector
+        selectedMembers={selectedMembers}
+        onChange={setSelectedMembers}
+        header="Members"
+      />
+      <div className="calendar">
+        <div className="date-header">
+          <div className="navigation">
+            <button
+              onClick={prevMonth}
+              className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
+            >
+              Prev
+            </button>
+            <button
+              onClick={nextMonth}
+              className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
+            >
+              Next
+            </button>
+          </div>
+          <span className="date-display">
+            {monthNames[currentMonth]} {currentYear}
+          </span>
+          <div className="view-type-switcher">
+            <button
+              onClick={() => setView('month')}
+              className={`px-2 py-1 rounded ${view === 'month' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+            >
+              Month
+            </button>
+            <button
+              onClick={() => setView('week')}
+              className={`px-2 py-1 rounded ${view === 'week' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+            >
+              Week
+            </button>
+            <button
+              onClick={() => setView('day')}
+              className={`px-2 py-1 rounded ${view === 'day' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+            >
+              Day
+            </button>
+            <button
+              onClick={() => setView('list')}
+              className={`px-2 py-1 rounded ${view === 'list' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+            >
+              List
+            </button>
+          </div>
         </div>
-        <span className="date-display">
-          {monthNames[currentMonth]} {currentYear}
-        </span>
-        <div className="view-type-switcher">
-          <button
-            onClick={() => setView('month')}
-            className={`px-2 py-1 rounded ${view === 'month' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-          >
-            Month
-          </button>
-          <button
-            onClick={() => setView('week')}
-            className={`px-2 py-1 rounded ${view === 'week' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-          >
-            Week
-          </button>
-          <button
-            onClick={() => setView('day')}
-            className={`px-2 py-1 rounded ${view === 'day' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-          >
-            Day
-          </button>
-          <button
-            onClick={() => setView('list')}
-            className={`px-2 py-1 rounded ${view === 'list' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-          >
-            List
-          </button>
-        </div>
+
+        {view === 'month' && <MonthView {...sharedProps} />}
+        {view === 'week' && <WeekView {...sharedProps} />}
+        {view === 'day' && <DayView {...sharedProps} />}
+        {view === 'list' && <ListView {...sharedProps} />}
+
+        <Modal
+          isOpen={!!createEventOnDay}
+          onClose={() => closeCreateEventModal()}
+        >
+          {createEventOnDay && (
+            <CreateEvent
+              selectedDate={createEventOnDay}
+              setSelectedDate={setCreateEventOnDay}
+            />
+          )}
+        </Modal>
       </div>
-
-      {view === 'month' && <MonthView {...sharedProps} />}
-      {view === 'week' && <WeekView {...sharedProps} />}
-      {view === 'day' && <DayView {...sharedProps} />}
-      {view === 'list' && <ListView {...sharedProps} />}
-
-      <Modal
-        isOpen={!!createEventOnDay}
-        onClose={() => closeCreateEventModal()}
-      >
-        {createEventOnDay && (
-          <CreateEvent
-            selectedDate={createEventOnDay}
-            setSelectedDate={setCreateEventOnDay}
-          />
-        )}
-      </Modal>
     </div>
   )
 }

@@ -4,6 +4,7 @@ import { addEvent } from '../services/events.service'
 import type { EventType } from '../types/EventType'
 import type { MemberType } from '../types/MemberType'
 import '../assets/styles.scss'
+import MemberSelector from '@/features/calendar/components/MemberSelector'
 
 type CreateEventProps = {
   selectedDate: Date
@@ -139,32 +140,11 @@ function CreateEvent({ selectedDate, setSelectedDate }: CreateEventProps) {
           >
             Members
           </label>
-          <div className="member-checkbox-group">
-            {members.map((member) => (
-              <label
-                key={member.id}
-                className="member-checkbox"
-                style={{ ['--member-color' as any]: member.color }}
-              >
-                <input
-                  type="checkbox"
-                  value={member.id}
-                  checked={eventMembers.some((m) => m.id === member.id)}
-                  onChange={(e) => {
-                    if (e.target.checked) {
-                      setEventMembers([...eventMembers, member])
-                    } else {
-                      setEventMembers(
-                        eventMembers.filter((m) => m.id !== member.id),
-                      )
-                    }
-                  }}
-                />
-                <div className="custom-checkbox"></div>
-                {member.name}
-              </label>
-            ))}
-          </div>
+
+          <MemberSelector
+            selectedMembers={eventMembers}
+            onChange={setEventMembers}
+          />
         </div>
         <div>
           <label

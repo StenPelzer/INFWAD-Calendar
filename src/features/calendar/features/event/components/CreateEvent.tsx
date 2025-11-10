@@ -158,7 +158,6 @@ function CreateEvent({ selectedDate, setSelectedDate }: CreateEventProps) {
             value={eventText}
             onChange={(e) => setEventText(e.target.value)}
             placeholder="Event description"
-            required
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
             rows={3}
           />

@@ -6,12 +6,20 @@ namespace INFWAD.Calendar.Backend.GraphQL;
 
 public class Mutation
 {
-    public async Task<Event> CreateEvent(Event input, [Service] IDbContextFactory<AppDbContext> dbFactory)
+    public async Task<Event> CreateEvent(CreateEventInput input, [Service] IDbContextFactory<AppDbContext> dbFactory)
     {
         await using var db = await dbFactory.CreateDbContextAsync();
-        db.Events.Add(input);
+        var newEvent = new Event
+        {
+            Title = input.Title,
+            Date = input.Date,
+            StartTime = input.StartTime,
+            EndTime = input.EndTime,
+            Description = input.Description
+        };
+        db.Events.Add(newEvent);
         await db.SaveChangesAsync();
-        return input;
+        return newEvent;
     }
 
     public async Task<Event?> UpdateEvent(int id, Event input, [Service] IDbContextFactory<AppDbContext> dbFactory)

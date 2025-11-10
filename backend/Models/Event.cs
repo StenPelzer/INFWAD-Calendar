@@ -10,9 +10,14 @@ public class Event
     [Required]
     public string Title { get; set; } = string.Empty;
 
+    [Required]
+    public DateTime Date { get; set; }
+
+    [Required]
+    public string StartTime { get; set; } = "00:00";
+
+    [Required]
+    public string EndTime { get; set; } = "23:59";
+
     public string? Description { get; set; }
-
-    public DateTime StartTime { get; set; }
-
-    public DateTime EndTime { get; set; }
 }

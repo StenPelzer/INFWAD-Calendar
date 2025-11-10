@@ -20,9 +20,10 @@ public class Mutation
         var existing = await db.Events.FindAsync(id);
         if (existing is null) return null;
         existing.Title = input.Title;
-        existing.Description = input.Description;
+        existing.Date = input.Date;
         existing.StartTime = input.StartTime;
         existing.EndTime = input.EndTime;
+        existing.Description = input.Description;
         await db.SaveChangesAsync();
         return existing;
     }

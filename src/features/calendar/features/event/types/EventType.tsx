@@ -7,5 +7,5 @@ export type EventType = {
   timeFrom: string
   timeTo: string
   members: Array<MemberType>
-  description: string
+  description?: string
 }

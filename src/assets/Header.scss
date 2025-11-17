@@ -1,4 +1,4 @@
-@import '../_variables.scss';
+@use '../_variables.scss' as *;
 
 header,
 aside {
@@ -6,7 +6,7 @@ aside {
 }
 
 nav a:hover {
-  background: darken($green, 10%);
+  background: $green-dark;
 }
 
 .logo {

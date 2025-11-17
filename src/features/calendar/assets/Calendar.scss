@@ -1,4 +1,4 @@
-@import '../../../_variables.scss';
+@use '../../../_variables.scss' as *;
 
 // General
 .calendar-wrapper {
@@ -133,6 +133,6 @@ table {
   }
 
   &:hover {
-    background-color: darken($green, 10%);
+    background-color: $green-dark;
   }
 }

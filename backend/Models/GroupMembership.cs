@@ -12,8 +12,8 @@ public class GroupMembership
     public int UserId { get; set; }
 
     [ForeignKey("GroupId")]
-    public Group Group { get; set; }
+    public Group Group { get; set; } = null!;
 
     [ForeignKey("UserId")]
-    public User User { get; set; }
+    public User User { get; set; } = null!;
 }

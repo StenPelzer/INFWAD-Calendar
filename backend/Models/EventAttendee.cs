@@ -12,8 +12,8 @@ public class EventAttendee
     public int UserId { get; set; }
 
     [ForeignKey("EventId")]
-    public Event Event { get; set; }
+    public Event Event { get; set; } = null!;
 
     [ForeignKey("UserId")]
-    public User User { get; set; }
+    public User User { get; set; } = null!;
 }

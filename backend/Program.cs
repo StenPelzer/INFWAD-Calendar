@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using INFWAD.Calendar.Backend.Data;
 using INFWAD.Calendar.Backend.GraphQL;
+using INFWAD.Calendar.Backend.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +21,14 @@ builder.Services
     .AddGraphQLServer()
     .AddQueryType<Query>()
     .AddMutationType<Mutation>()
+    .AddType<Event>()
+    .AddType<User>()
+    .AddType<Group>()
+    .AddType<Role>()
+    .AddType<Room>()
+    .AddType<UserOfficeAttendance>()
+    .AddType<EventAttendee>()
+    .AddType<GroupMembership>()
     .AddProjections()
     .AddFiltering()
     .AddSorting();

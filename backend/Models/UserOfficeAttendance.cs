@@ -21,5 +21,5 @@ public class UserOfficeAttendance
     public string EndTime { get; set; } = "23:59";
 
     [ForeignKey("UserId")]
-    public User User { get; set; }
+    public User User { get; set; } = null!;
 }

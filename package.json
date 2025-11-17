@@ -9,7 +9,7 @@
     "test": "vitest run",
     "lint": "eslint",
     "format": "prettier",
-    "graphql:codegen": "graphql-codegen --config codegen.yaml",
+    "graphql:codegen": "graphql-codegen --config codegen.yaml && node scripts/fix-apollo-import.js",
     "check": "prettier --write . && eslint --fix"
   },
   "dependencies": {

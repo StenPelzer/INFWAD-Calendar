@@ -1,6 +1,6 @@
 schema: 'http://localhost:5001/graphql'
 documents:
-  - 'src/**/*.graphql'
+  - 'src/**/*.{ts,tsx}'
 generates:
   src/graphql/generated.ts:
     plugins:
@@ -10,5 +10,7 @@ generates:
     config:
       withHooks: true
       avoidOptionals: true
+      reactApolloVersion: 4
+      apolloClientImportFrom: '@apollo/client/react'
       scalars:
         Date: string

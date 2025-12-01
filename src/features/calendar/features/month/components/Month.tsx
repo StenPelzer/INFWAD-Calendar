@@ -33,14 +33,6 @@ export default function MonthView({
     selectedMembers,
   )
 
-  useEffect(() => {
-    console.log('getEvents')
-
-    getEvents().then((events) => {
-      console.log(events)
-    })
-  }, [])
-
   function getEventBackground(event: EventType): string {
     const selectedEventMembers = event.members.filter((member) =>
       selectedMembers.some((sm) => sm.id === member.id),

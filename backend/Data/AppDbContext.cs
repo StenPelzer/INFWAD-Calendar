@@ -14,7 +14,6 @@ public class AppDbContext : DbContext
     public DbSet<EventAttendee> EventAttendees => Set<EventAttendee>();
     public DbSet<Group> Groups => Set<Group>();
     public DbSet<GroupMembership> GroupMemberships => Set<GroupMembership>();
-    public DbSet<Role> Roles => Set<Role>();
     public DbSet<Room> Rooms => Set<Room>();
     public DbSet<User> Users => Set<User>();
     public DbSet<UserOfficeAttendance> UserOfficeAttendances => Set<UserOfficeAttendance>();
@@ -56,20 +55,13 @@ public class AppDbContext : DbContext
         {
             eb.HasKey(gm => new { gm.GroupId, gm.UserId });
             eb.HasOne(gm => gm.Group)
-              .WithMany()
+              .WithMany(g => g.GroupMemberships)
               .HasForeignKey(gm => gm.GroupId)
               .OnDelete(DeleteBehavior.Cascade);
             eb.HasOne(gm => gm.User)
-              .WithMany()
+              .WithMany(u => u.GroupMemberships)
               .HasForeignKey(gm => gm.UserId)
               .OnDelete(DeleteBehavior.Cascade);
-        });
-
-        // Role configuration
-        modelBuilder.Entity<Role>(eb =>
-        {
-            eb.HasKey(r => r.Id);
-            eb.Property(r => r.Title).IsRequired();
         });
 
         // Room configuration
@@ -85,8 +77,10 @@ public class AppDbContext : DbContext
             eb.HasKey(u => u.Id);
             eb.Property(u => u.Name).IsRequired();
             eb.Property(u => u.Email).IsRequired();
-            eb.Property(u => u.Role).IsRequired();
-            eb.Property(u => u.Password).IsRequired();
+            eb.Property(u => u.Role)
+              .IsRequired()
+              .HasConversion<int>();
+            eb.Property(u => u.PasswordHash).IsRequired();
         });
 
         // UserOfficeAttendance configuration

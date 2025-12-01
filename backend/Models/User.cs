@@ -16,12 +16,13 @@ public class User
     public string Email { get; set; } = string.Empty;
 
     [Required]
-    public string Role { get; set; } = string.Empty;
+    public UserRole Role { get; set; } = UserRole.Basic;
 
     [Required]
-    public string Password { get; set; } = string.Empty;
+    [GraphQLIgnore]
+    public string PasswordHash { get; set; } = string.Empty;
 
-    public string? Color { get; set; }
+    public string Color { get; set; } = $"#{Guid.NewGuid().ToString("N").Substring(0, 6)}";
 
     [GraphQLIgnore]
     public ICollection<EventAttendee> EventAttendees { get; set; } = new List<EventAttendee>();

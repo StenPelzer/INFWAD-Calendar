@@ -9,6 +9,7 @@ import { routeTree } from './routeTree.gen'
 import './styles.css'
 import reportWebVitals from './reportWebVitals.ts'
 import { apolloClient } from './graphql/client'
+import { AuthProvider } from './context/AuthContext'
 
 // Create a new router instance
 const router = createRouter({
@@ -34,7 +35,9 @@ if (rootElement && !rootElement.innerHTML) {
   root.render(
     <StrictMode>
       <ApolloProvider client={apolloClient}>
-        <RouterProvider router={router} />
+        <AuthProvider>
+          <RouterProvider router={router} />
+        </AuthProvider>
       </ApolloProvider>
     </StrictMode>,
   )

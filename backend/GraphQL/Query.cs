@@ -2,11 +2,31 @@ using INFWAD.Calendar.Backend.Data;
 using INFWAD.Calendar.Backend.Models;
 using Microsoft.EntityFrameworkCore;
 using HotChocolate;
+using System.Security.Claims;
 
 namespace INFWAD.Calendar.Backend.GraphQL;
 
 public class Query
 {
+    [GraphQLName("me")]
+    public async Task<User?> GetMe(
+        ClaimsPrincipal? claimsPrincipal,
+        [Service] IDbContextFactory<AppDbContext> dbFactory)
+    {
+        if (claimsPrincipal?.Identity?.IsAuthenticated != true)
+            return null;
+
+        var userIdClaim = claimsPrincipal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
+            return null;
+
+        await using var db = await dbFactory.CreateDbContextAsync();
+        return await db.Users
+            .AsNoTracking()
+            .Include(u => u.EventAttendees)
+            .FirstOrDefaultAsync(u => u.Id == userId);
+    }
+
     [GraphQLName("events")]
     public async Task<IEnumerable<Event>> GetEvents([Service] IDbContextFactory<AppDbContext> dbFactory)
     {
@@ -41,20 +61,6 @@ public class Query
     {
         await using var db = await dbFactory.CreateDbContextAsync();
         return await db.Groups.FindAsync(id);
-    }
-
-    [GraphQLName("roles")]
-    public async Task<IEnumerable<Role>> GetRoles([Service] IDbContextFactory<AppDbContext> dbFactory)
-    {
-        await using var db = await dbFactory.CreateDbContextAsync();
-        return await db.Roles.AsNoTracking().ToListAsync();
-    }
-
-    [GraphQLName("role")]
-    public async Task<Role?> GetRole(int id, [Service] IDbContextFactory<AppDbContext> dbFactory)
-    {
-        await using var db = await dbFactory.CreateDbContextAsync();
-        return await db.Roles.FindAsync(id);
     }
 
     [GraphQLName("rooms")]

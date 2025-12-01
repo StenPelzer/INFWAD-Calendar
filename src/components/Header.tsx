@@ -37,13 +37,6 @@ export default function Header() {
             <div className="auth-loading" />
           ) : isAuthenticated && user ? (
             <div className="user-info">
-              <div className="user-avatar">
-                {user.role === 'Admin' ? (
-                  <Shield size={16} />
-                ) : (
-                  <User size={16} />
-                )}
-              </div>
               <span className="user-name">{user.name}</span>
               <button
                 onClick={handleLogout}

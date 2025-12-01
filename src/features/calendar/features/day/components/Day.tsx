@@ -1,4 +1,7 @@
-import { getEventsForDay } from '../../event/services/events.service'
+import {
+  useGetEvents,
+  getEventsForDay,
+} from '../../event/services/eventsGraphql.service'
 import type { CalendarViewProps } from '../../../types/CalendarType'
 
 export default function DayView({
@@ -8,14 +11,22 @@ export default function DayView({
   createEventOnDay,
   monthNames,
   daysInMonth,
-  selectedMembers,
+  selectedAttendees,
 }: CalendarViewProps) {
-  const events = getEventsForDay(
-    currentYear,
-    currentMonth + 1,
-    createEventOnDay ? createEventOnDay.getDate() : 0,
-    selectedMembers,
-  )
+  const { data, loading, error } = useGetEvents()
+  const events =
+    data?.events && createEventOnDay
+      ? getEventsForDay(
+          data.events,
+          currentYear,
+          currentMonth + 1,
+          createEventOnDay.getDate(),
+          selectedAttendees,
+        )
+      : []
+
+  if (loading) return <div>Loading events...</div>
+  if (error) return <div>Error loading events: {error.message}</div>
 
   return (
     <div>

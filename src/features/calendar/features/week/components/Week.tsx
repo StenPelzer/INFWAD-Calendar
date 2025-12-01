@@ -1,7 +1,9 @@
 import { useState } from 'react'
-import { getEventsForWeek } from '../../event/services/events.service'
+import {
+  useGetEvents,
+  getEventsForWeek,
+} from '../../event/services/eventsGraphql.service'
 import type { CalendarViewProps } from '../../../types/CalendarType'
-import type { EventType } from '../../../features/event/types/EventType'
 
 export default function WeekView({
   currentYear,
@@ -10,8 +12,9 @@ export default function WeekView({
   createEventOnDay,
   monthNames,
   daysInMonth,
-  selectedMembers,
+  selectedAttendees,
 }: CalendarViewProps) {
+  const { data, loading, error } = useGetEvents()
   const today = new Date()
   const [selectedWeek, setSelectedWeek] = useState<number>(
     Math.floor((today.getDate() + today.getDay()) / 7),
@@ -32,12 +35,18 @@ export default function WeekView({
   }
   const weekDays = weeks[selectedWeek] || []
 
-  const events = getEventsForWeek(
-    currentYear,
-    currentMonth + 1,
-    selectedWeek,
-    selectedMembers,
-  )
+  const events = data?.events
+    ? getEventsForWeek(
+        data.events,
+        currentYear,
+        currentMonth + 1,
+        selectedWeek,
+        selectedAttendees,
+      )
+    : []
+
+  if (loading) return <div>Loading events...</div>
+  if (error) return <div>Error loading events: {error.message}</div>
 
   return (
     <div>
@@ -72,11 +81,17 @@ export default function WeekView({
                 </button>
                 <div className="events">
                   {events
-                    .filter((e) => e.date.getDate() === day)
-                    .map((event: EventType, idx: number) => (
+                    .filter((e) => {
+                      const eventDate =
+                        typeof e.date === 'string'
+                          ? new Date(e.date)
+                          : new Date(e.date)
+                      return eventDate.getDate() === day
+                    })
+                    .map((event, idx: number) => (
                       <div key={idx} className="event">
                         <span className="event-time">
-                          {event.timeFrom} - {event.timeTo}
+                          {event.startTime} - {event.endTime}
                         </span>
                         <span className="event-title">{event.title}</span>
                       </div>

@@ -1,8 +1,8 @@
-import { useEffect } from 'react'
-import { getEventsForMonth } from '../../event/services/events.service'
-import { getEvents } from '../../event/services/eventsGraphql.service'
+import {
+  getEventsForMonth,
+  useGetEvents,
+} from '../../event/services/eventsGraphql.service'
 import type { CalendarViewProps } from '../../../types/CalendarType'
-import type { EventType } from '../../../features/event/types/EventType'
 import '../assets/styles.scss'
 
 export default function MonthView({
@@ -10,8 +10,9 @@ export default function MonthView({
   currentMonth,
   setCreateEventOnDay,
   daysInMonth,
-  selectedMembers,
+  selectedAttendees,
 }: CalendarViewProps) {
+  const { data, loading, error } = useGetEvents()
   const firstDay = new Date(currentYear, currentMonth, 1).getDay()
   const weeks = []
   let day = 1
@@ -27,30 +28,39 @@ export default function MonthView({
     weeks.push(week)
   }
 
-  const events = getEventsForMonth(
-    currentYear,
-    currentMonth + 1,
-    selectedMembers,
-  )
+  const events = data?.events
+    ? getEventsForMonth(
+        data.events,
+        currentYear,
+        currentMonth + 1,
+        selectedAttendees,
+      )
+    : []
 
-  function getEventBackground(event: EventType): string {
-    const selectedEventMembers = event.members.filter((member) =>
-      selectedMembers.some((sm) => sm.id === member.id),
+  if (loading) return <div>Loading events...</div>
+  if (error) return <div>Error loading events: {error.message}</div>
+
+  function getEventBackground(event: {
+    attendees: Array<{ id: number; color: string | null }>
+  }): string {
+    const selectedEventAttendees = event.attendees.filter((attendee) =>
+      selectedAttendees.some((sa) => sa.id === attendee.id),
     )
 
-    if (selectedEventMembers.length === 0) {
+    if (selectedEventAttendees.length === 0) {
       return ''
     }
 
-    if (selectedEventMembers.length === 1) {
-      return selectedEventMembers[0].color
+    if (selectedEventAttendees.length === 1) {
+      return selectedEventAttendees[0].color || 'gray'
     }
 
     let linearGradient = 'linear-gradient(130deg, '
-    const colorStops = selectedEventMembers.map((member, index) => {
-      const percentageStart = (index / selectedEventMembers.length) * 100
-      const percentageEnd = ((index + 1) / selectedEventMembers.length) * 100
-      return `${member.color} ${percentageStart}%, ${member.color} ${percentageEnd}%`
+    const colorStops = selectedEventAttendees.map((attendee, index) => {
+      const color = attendee.color || 'gray'
+      const percentageStart = (index / selectedEventAttendees.length) * 100
+      const percentageEnd = ((index + 1) / selectedEventAttendees.length) * 100
+      return `${color} ${percentageStart}%, ${color} ${percentageEnd}%`
     })
     linearGradient += colorStops.join(', ') + ')'
     return linearGradient
@@ -91,15 +101,21 @@ export default function MonthView({
                       </div>
                       <div className="events">
                         {events
-                          .filter((e) => e.date.getDate() === day)
-                          .map((event: EventType, idx: number) => (
+                          .filter((e) => {
+                            const eventDate =
+                              typeof e.date === 'string'
+                                ? new Date(e.date)
+                                : new Date(e.date)
+                            return eventDate.getDate() === day
+                          })
+                          .map((event, idx: number) => (
                             <div
                               key={idx}
                               className="event"
                               style={{ background: getEventBackground(event) }}
                             >
                               <span className="event-time">
-                                {event.timeFrom}
+                                {event.startTime}
                               </span>
                               <span className="event-title">{event.title}</span>
                             </div>

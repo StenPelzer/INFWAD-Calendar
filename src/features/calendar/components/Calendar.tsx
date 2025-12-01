@@ -5,9 +5,9 @@ import CreateEvent from '../features/event/components/CreateEvent'
 import WeekView from '../features/week/components/Week'
 import DayView from '../features/day/components/Day'
 import ListView from '../features/list/components/List'
-import MemberSelector from './MemberSelector'
+import AttendeeSelector from './AttendeeSelector'
 import '../assets/Calendar.scss'
-import type { MemberType } from '../features/event/types/MemberType'
+import type { User } from '@/graphql/generated'
 
 function getDaysInMonth(year: number, month: number) {
   return new Date(year, month + 1, 0).getDate()
@@ -17,7 +17,7 @@ export default function Calendar() {
   const today = new Date()
   const [currentMonth, setCurrentMonth] = useState(today.getMonth())
   const [currentYear, setCurrentYear] = useState(today.getFullYear())
-  const [selectedMembers, setSelectedMembers] = useState<Array<MemberType>>([])
+  const [selectedAttendees, setSelectedAttendees] = useState<Array<User>>([])
   const [createEventOnDay, setCreateEventOnDay] = useState<Date | null>(null)
   const [view, setView] = useState<'month' | 'week' | 'day' | 'list'>('month')
 
@@ -57,15 +57,15 @@ export default function Calendar() {
     createEventOnDay,
     monthNames,
     daysInMonth,
-    selectedMembers,
+    selectedAttendees,
   }
 
   return (
     <div className="calendar-wrapper">
-      <MemberSelector
-        selectedMembers={selectedMembers}
-        onChange={setSelectedMembers}
-        header="Members"
+      <AttendeeSelector
+        selectedAttendees={selectedAttendees}
+        onChange={setSelectedAttendees}
+        header="Attendees"
       />
       <div className="calendar">
         <div className="date-header">

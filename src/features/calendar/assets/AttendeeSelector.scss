@@ -1,6 +1,6 @@
 @use '../../../_variables.scss' as *;
 
-.member-selector {
+.attendee-selector {
   height: 100%;
   width: 200px;
   padding-top: calc(
@@ -15,13 +15,13 @@
     margin-bottom: 1rem;
   }
 
-  .member-checkbox-group {
+  .attendee-checkbox-group {
     display: flex;
     flex-wrap: wrap;
     flex-direction: column;
     gap: 5px 15px;
 
-    .member-checkbox {
+    .attendee-checkbox {
       position: relative;
       display: flex;
       align-items: center;
@@ -32,7 +32,7 @@
         display: none;
 
         &:checked + .custom-checkbox {
-          background-color: var(--member-color);
+          background-color: var(--attendee-color);
         }
       }
 
@@ -41,7 +41,7 @@
         display: block;
         width: 20px;
         aspect-ratio: 1;
-        border: solid 2px var(--member-color);
+        border: solid 2px var(--attendee-color);
         position: relative;
         transition: $transition;
 
@@ -64,3 +64,4 @@
     }
   }
 }
+

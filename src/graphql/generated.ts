@@ -28,6 +28,7 @@ export type CreateEventInput = {
 
 export type Event = {
   __typename?: 'Event';
+  attendees: Array<User>;
   date: Scalars['LocalDate']['output'];
   description: Maybe<Scalars['String']['output']>;
   endTime: Scalars['String']['output'];
@@ -57,6 +58,7 @@ export type Group = {
   __typename?: 'Group';
   description: Maybe<Scalars['String']['output']>;
   id: Scalars['Int']['output'];
+  members: Array<User>;
   name: Scalars['String']['output'];
 };
 
@@ -153,7 +155,10 @@ export type Room = {
 
 export type User = {
   __typename?: 'User';
+  color: Maybe<Scalars['String']['output']>;
   email: Scalars['String']['output'];
+  events: Array<Event>;
+  groups: Array<Group>;
   id: Scalars['Int']['output'];
   name: Scalars['String']['output'];
   password: Scalars['String']['output'];
@@ -170,30 +175,29 @@ export type UserOfficeAttendance = {
   userId: Scalars['Int']['output'];
 };
 
-export type EventFragmentFragment = { __typename?: 'Event', id: number, title: string, date: any, startTime: string, endTime: string, description: string | null };
-
 export type GetEventsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetEventsQuery = { __typename?: 'Query', events: Array<{ __typename?: 'Event', id: number, title: string, date: any, startTime: string, endTime: string, description: string | null }> };
+export type GetEventsQuery = { __typename?: 'Query', events: Array<{ __typename?: 'Event', id: number, title: string, date: any, startTime: string, endTime: string, description: string | null, attendees: Array<{ __typename?: 'User', id: number, name: string, color: string | null }> }> };
 
-export const EventFragmentFragmentDoc = gql`
-    fragment EventFragment on Event {
-  id
-  title
-  date
-  startTime
-  endTime
-  description
-}
-    `;
+
 export const GetEventsDocument = gql`
     query GetEvents {
   events {
-    ...EventFragment
+    id
+    title
+    date
+    startTime
+    endTime
+    description
+    attendees {
+      id
+      name
+      color
+    }
   }
 }
-    ${EventFragmentFragmentDoc}`;
+    `;
 
 /**
  * __useGetEventsQuery__

@@ -1,4 +1,6 @@
+import { useEffect } from 'react'
 import { getEventsForMonth } from '../../event/services/events.service'
+import { getEvents } from '../../event/services/eventsGraphql.service'
 import type { CalendarViewProps } from '../../../types/CalendarType'
 import type { EventType } from '../../../features/event/types/EventType'
 import '../assets/styles.scss'
@@ -30,6 +32,14 @@ export default function MonthView({
     currentMonth + 1,
     selectedMembers,
   )
+
+  useEffect(() => {
+    console.log('getEvents')
+
+    getEvents().then((events) => {
+      console.log(events)
+    })
+  }, [])
 
   function getEventBackground(event: EventType): string {
     const selectedEventMembers = event.members.filter((member) =>

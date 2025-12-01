@@ -35,11 +35,11 @@ public class AppDbContext : DbContext
         {
             eb.HasKey(ea => new { ea.EventId, ea.UserId });
             eb.HasOne(ea => ea.Event)
-              .WithMany()
+              .WithMany(e => e.EventAttendees)
               .HasForeignKey(ea => ea.EventId)
               .OnDelete(DeleteBehavior.Cascade);
             eb.HasOne(ea => ea.User)
-              .WithMany()
+              .WithMany(u => u.EventAttendees)
               .HasForeignKey(ea => ea.UserId)
               .OnDelete(DeleteBehavior.Cascade);
         });

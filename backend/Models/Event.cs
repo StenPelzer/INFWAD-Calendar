@@ -1,4 +1,6 @@
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using HotChocolate;
 
 namespace INFWAD.Calendar.Backend.Models;
 
@@ -20,4 +22,10 @@ public class Event
     public string EndTime { get; set; } = "23:59";
 
     public string? Description { get; set; }
+
+    [GraphQLIgnore]
+    public ICollection<EventAttendee> EventAttendees { get; set; } = new List<EventAttendee>();
+
+    [GraphQLName("attendees")]
+    public IEnumerable<User> Attendees => EventAttendees.Select(ea => ea.User);
 }

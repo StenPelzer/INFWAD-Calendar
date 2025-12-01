@@ -11,4 +11,10 @@ public class Group
     public string Name { get; set; } = string.Empty;
 
     public string? Description { get; set; }
+
+    [GraphQLIgnore]
+    public ICollection<GroupMembership> GroupMemberships { get; set; } = new List<GroupMembership>();
+
+    [GraphQLName("members")]
+    public IEnumerable<User> Members => GroupMemberships.Select(gm => gm.User);
 }

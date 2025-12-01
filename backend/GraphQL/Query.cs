@@ -11,14 +11,22 @@ public class Query
     public async Task<IEnumerable<Event>> GetEvents([Service] IDbContextFactory<AppDbContext> dbFactory)
     {
         await using var db = await dbFactory.CreateDbContextAsync();
-        return await db.Events.AsNoTracking().ToListAsync();
+        return await db.Events
+            .AsNoTracking()
+            .Include(e => e.EventAttendees)
+                .ThenInclude(ea => ea.User)
+            .ToListAsync();
     }
 
     [GraphQLName("event")]
     public async Task<Event?> GetEvent(int id, [Service] IDbContextFactory<AppDbContext> dbFactory)
     {
         await using var db = await dbFactory.CreateDbContextAsync();
-        return await db.Events.FindAsync(id);
+        return await db.Events
+            .AsNoTracking()
+            .Include(e => e.EventAttendees)
+                .ThenInclude(ea => ea.User)
+            .FirstOrDefaultAsync(e => e.Id == id);
     }
 
     [GraphQLName("groups")]
@@ -67,14 +75,14 @@ public class Query
     public async Task<IEnumerable<User>> GetUsers([Service] IDbContextFactory<AppDbContext> dbFactory)
     {
         await using var db = await dbFactory.CreateDbContextAsync();
-        return await db.Users.AsNoTracking().ToListAsync();
+        return await db.Users.AsNoTracking().Include(u => u.EventAttendees).ToListAsync();
     }
 
     [GraphQLName("user")]
     public async Task<User?> GetUser(int id, [Service] IDbContextFactory<AppDbContext> dbFactory)
     {
         await using var db = await dbFactory.CreateDbContextAsync();
-        return await db.Users.FindAsync(id);
+        return await db.Users.AsNoTracking().Include(u => u.EventAttendees).FirstOrDefaultAsync(u => u.Id == id);
     }
 
     [GraphQLName("userOfficeAttendances")]

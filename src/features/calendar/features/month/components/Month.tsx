@@ -1,4 +1,6 @@
+import { useEffect } from 'react'
 import { getEventsForMonth } from '../../event/services/events.service'
+import { getEvents } from '../../event/services/eventsGraphql.service'
 import type { CalendarViewProps } from '../../../types/CalendarType'
 import type { EventType } from '../../../features/event/types/EventType'
 import '../assets/styles.scss'

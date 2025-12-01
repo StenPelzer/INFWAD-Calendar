@@ -1,4 +1,4 @@
-import type { MemberType } from '../features/event/types/MemberType'
+import type { User } from '@/graphql/generated'
 
 export interface CalendarViewProps {
   currentYear: number
@@ -7,5 +7,5 @@ export interface CalendarViewProps {
   createEventOnDay: Date | null
   monthNames: Array<string>
   daysInMonth: number
-  selectedMembers: Array<MemberType>
+  selectedAttendees: Array<User>
 }

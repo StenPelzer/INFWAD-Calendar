@@ -1,10 +1,8 @@
 import React from 'react'
-import useQueryGetMembers from '../hooks/QueryGetMembers'
-import { addEvent } from '../services/events.service'
-import type { EventType } from '../types/EventType'
-import type { MemberType } from '../types/MemberType'
+import { useCreateEvent } from '../services/eventsGraphql.service'
+import type { CreateEventInput, User } from '@/graphql/generated'
 import '../assets/styles.scss'
-import MemberSelector from '@/features/calendar/components/MemberSelector'
+import AttendeeSelector from '@/features/calendar/components/AttendeeSelector'
 
 type CreateEventProps = {
   selectedDate: Date
@@ -25,35 +23,34 @@ function CreateEvent({ selectedDate, setSelectedDate }: CreateEventProps) {
   )
   const [eventTimeTo, setEventTimeTo] = React.useState(getCurrentTimeString())
   const [eventTitle, setEventTitle] = React.useState('')
-  const [eventMembers, setEventMembers] = React.useState<Array<MemberType>>([])
-  const [members, setMembers] = React.useState<Array<MemberType>>([])
+  const [eventAttendees, setEventAttendees] = React.useState<Array<User>>([])
+  const [createEvent, { loading: creating }] = useCreateEvent()
 
-  React.useEffect(() => {
-    const result = useQueryGetMembers()
-    setMembers(result.members)
-  }, [])
-
-  function onSubmit(e: React.FormEvent) {
+  async function onSubmit(e: React.FormEvent) {
     e.preventDefault()
-    handleAddEvent({
-      title: eventTitle,
-      date: selectedDate,
-      timeFrom: eventTimeFrom,
-      timeTo: eventTimeTo,
-      members: eventMembers,
-      description: eventText,
-    })
-    setSelectedDate(null)
-    setEventText('')
-    setEventTimeFrom('')
-    setEventTimeTo('')
-  }
 
-  function handleAddEvent(event: EventType) {
-    const date = event.date
-    date.setHours(12, 0, 0, 0) // Temporary fix for timezone issues
-    event.date = date // Temporary fix for timezone issues
-    addEvent(event)
+    // Format date as YYYY-MM-DD for LocalDate
+    const dateStr = selectedDate.toISOString().split('T')[0]
+
+    const input: CreateEventInput = {
+      title: eventTitle,
+      date: dateStr,
+      startTime: eventTimeFrom,
+      endTime: eventTimeTo,
+      description: eventText || null,
+    }
+
+    try {
+      await createEvent({ variables: { input } })
+      setSelectedDate(null)
+      setEventText('')
+      setEventTimeFrom('')
+      setEventTimeTo('')
+      setEventAttendees([])
+    } catch (error) {
+      console.error('Error creating event:', error)
+      alert('Failed to create event. Please try again.')
+    }
   }
 
   return (
@@ -136,14 +133,14 @@ function CreateEvent({ selectedDate, setSelectedDate }: CreateEventProps) {
         <div>
           <label
             className="block text-sm font-medium mb-1"
-            htmlFor="event-members"
+            htmlFor="event-attendees"
           >
-            Members
+            Attendees
           </label>
 
-          <MemberSelector
-            selectedMembers={eventMembers}
-            onChange={setEventMembers}
+          <AttendeeSelector
+            selectedAttendees={eventAttendees}
+            onChange={setEventAttendees}
           />
         </div>
         <div>
@@ -164,9 +161,10 @@ function CreateEvent({ selectedDate, setSelectedDate }: CreateEventProps) {
         </div>
         <button
           type="submit"
-          className="w-full py-2 px-4 bg-blue-600 text-white font-semibold rounded-md shadow hover:bg-blue-700 transition-colors"
+          disabled={creating}
+          className="w-full py-2 px-4 bg-blue-600 text-white font-semibold rounded-md shadow hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Add Event
+          {creating ? 'Creating...' : 'Add Event'}
         </button>
       </div>
     </form>

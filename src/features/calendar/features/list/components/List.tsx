@@ -1,6 +1,8 @@
-import { getEventsForMonth } from '../../event/services/events.service'
+import {
+  useGetEvents,
+  getEventsForMonth,
+} from '../../event/services/eventsGraphql.service'
 import type { CalendarViewProps } from '../../../types/CalendarType'
-import type { EventType } from '../../../features/event/types/EventType'
 
 export default function ListView({
   currentYear,
@@ -9,13 +11,20 @@ export default function ListView({
   createEventOnDay,
   monthNames,
   daysInMonth,
-  selectedMembers,
+  selectedAttendees,
 }: CalendarViewProps) {
-  const events = getEventsForMonth(
-    currentYear,
-    currentMonth + 1,
-    selectedMembers,
-  )
+  const { data, loading, error } = useGetEvents()
+  const events = data?.events
+    ? getEventsForMonth(
+        data.events,
+        currentYear,
+        currentMonth + 1,
+        selectedAttendees,
+      )
+    : []
+
+  if (loading) return <div>Loading events...</div>
+  if (error) return <div>Error loading events: {error.message}</div>
 
   return (
     <div>
@@ -38,11 +47,17 @@ export default function ListView({
               </button>
               <div className="events">
                 {events
-                  .filter((e) => e.date.getDate() === day)
-                  .map((event: EventType, idx: number) => (
+                  .filter((e) => {
+                    const eventDate =
+                      typeof e.date === 'string'
+                        ? new Date(e.date)
+                        : new Date(e.date)
+                    return eventDate.getDate() === day
+                  })
+                  .map((event, idx: number) => (
                     <div key={idx} className="event">
                       <span className="event-time">
-                        {event.timeFrom} - {event.timeTo}
+                        {event.startTime} - {event.endTime}
                       </span>
                       <span className="event-title">{event.title}</span>
                     </div>

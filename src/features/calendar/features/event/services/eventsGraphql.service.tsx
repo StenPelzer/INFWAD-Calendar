@@ -1,11 +1,6 @@
 import { gql } from '@apollo/client'
 import { useLazyQuery, useMutation, useQuery } from '@apollo/client/react'
-import type {
-  Event,
-  GetEventsQuery,
-  CreateEventInput,
-  User,
-} from '@/graphql/generated'
+import type { Event, GetEventsQuery, User } from '@/graphql/generated'
 import { apolloClient } from '@/graphql/client'
 
 // Type for events returned from the query (partial Event type)

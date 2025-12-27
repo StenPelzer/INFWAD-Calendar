@@ -1,7 +1,7 @@
 import { Link, useNavigate } from '@tanstack/react-router'
 
 import { useState } from 'react'
-import { Home, Menu, X, LogIn, LogOut, User, Shield } from 'lucide-react'
+import { Home, LogIn, LogOut, Menu, Shield, User, X } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import '../assets/Header.scss'
 

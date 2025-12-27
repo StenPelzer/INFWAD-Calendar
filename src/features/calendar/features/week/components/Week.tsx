@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import {
-  useGetEvents,
   getEventsForWeek,
+  useGetEvents,
 } from '../../event/services/eventsGraphql.service'
 import type { CalendarViewProps } from '../../../types/CalendarType'
 

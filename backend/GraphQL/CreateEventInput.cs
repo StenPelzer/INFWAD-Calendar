@@ -17,4 +17,6 @@ public class CreateEventInput
     public string EndTime { get; set; } = "23:59";
 
     public string? Description { get; set; }
+
+    public List<int>? AttendeeIds { get; set; }
 }

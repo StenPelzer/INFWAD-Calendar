@@ -37,6 +37,7 @@ export type AuthPayload = {
 };
 
 export type CreateEventInput = {
+  attendeeIds: InputMaybe<Array<Scalars['Int']['input']>>;
   date: Scalars['LocalDate']['input'];
   description: InputMaybe<Scalars['String']['input']>;
   endTime: Scalars['String']['input'];

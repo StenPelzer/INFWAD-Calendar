@@ -84,18 +84,59 @@ public class Mutation
 
     public async Task<Event> CreateEvent(CreateEventInput input, [Service] IDbContextFactory<AppDbContext> dbFactory)
     {
-        await using var db = await dbFactory.CreateDbContextAsync();
-        var newEvent = new Event
+        int eventId;
+        
+        // Step 1: Create the event
+        await using (var db = await dbFactory.CreateDbContextAsync())
         {
-            Title = input.Title,
-            Date = input.Date,
-            StartTime = input.StartTime,
-            EndTime = input.EndTime,
-            Description = input.Description
-        };
-        db.Events.Add(newEvent);
-        await db.SaveChangesAsync();
-        return newEvent;
+            var newEvent = new Event
+            {
+                Title = input.Title,
+                Date = input.Date,
+                StartTime = input.StartTime,
+                EndTime = input.EndTime,
+                Description = input.Description
+            };
+            db.Events.Add(newEvent);
+            await db.SaveChangesAsync();
+            eventId = newEvent.Id;
+        }
+
+        // Step 2: Add attendees with change tracking disabled to avoid NavigationFixer issues
+        if (input.AttendeeIds != null && input.AttendeeIds.Count > 0)
+        {
+            await using var db = await dbFactory.CreateDbContextAsync();
+            
+            // Verify users exist
+            var existingUserIds = await db.Users
+                .Where(u => input.AttendeeIds.Contains(u.Id))
+                .Select(u => u.Id)
+                .ToListAsync();
+            
+            // Disable auto-detect changes to prevent NavigationFixer from running (composite key issue)
+            db.ChangeTracker.AutoDetectChangesEnabled = false;
+            
+            foreach (var userId in existingUserIds)
+            {
+                db.EventAttendees.Add(new EventAttendee
+                {
+                    EventId = eventId,
+                    UserId = userId
+                });
+            }
+            
+            await db.SaveChangesAsync();
+        }
+
+        // Step 3: Return the complete event with attendees
+        await using (var db = await dbFactory.CreateDbContextAsync())
+        {
+            return await db.Events
+                .AsNoTracking()
+                .Include(e => e.EventAttendees)
+                    .ThenInclude(ea => ea.User)
+                .FirstAsync(e => e.Id == eventId);
+        }
     }
 
     public async Task<Event?> UpdateEvent(int id, Event input, [Service] IDbContextFactory<AppDbContext> dbFactory)

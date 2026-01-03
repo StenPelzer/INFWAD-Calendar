@@ -1,11 +1,6 @@
 import { gql } from '@apollo/client'
 import { useLazyQuery, useMutation, useQuery } from '@apollo/client/react'
-import type {
-  Event,
-  GetEventsQuery,
-  CreateEventInput,
-  User,
-} from '@/graphql/generated'
+import type { GetEventsQuery, User } from '@/graphql/generated'
 import { apolloClient } from '@/graphql/client'
 
 // Type for events returned from the query (partial Event type)
@@ -74,7 +69,7 @@ export function useGetEvents() {
  * const events = await getEvents()
  * ```
  */
-export async function getEvents(): Promise<Array<Event>> {
+export async function getEvents(): Promise<Array<EventFromQuery>> {
   try {
     const { data } = await apolloClient.query<GetEventsQuery>({
       query: GET_EVENTS_QUERY,

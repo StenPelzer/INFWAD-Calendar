@@ -1,0 +1,262 @@
+@use '../../../_variables.scss' as *;
+
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - $headerHeight);
+  width: 100%;
+  background: linear-gradient(135deg, $beige 0%, lighten($beige, 5%) 100%);
+  position: relative;
+  overflow: hidden;
+  padding: 2rem;
+}
+
+.auth-card {
+  background: white;
+  border-radius: 24px;
+  box-shadow:
+    0 20px 60px rgba($blue, 0.12),
+    0 8px 24px rgba($blue, 0.08);
+  padding: 3rem;
+  width: 100%;
+  max-width: 420px;
+  position: relative;
+  z-index: 1;
+  animation: slideUp 0.4s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.auth-header {
+  text-align: center;
+  margin-bottom: 2rem;
+
+  h1 {
+    font-family: 'Georgia', serif;
+    font-size: 2rem;
+    color: $blue;
+    margin: 0 0 0.5rem 0;
+    font-weight: 700;
+  }
+
+  p {
+    color: lighten($blue, 20%);
+    margin: 0;
+    font-size: 0.95rem;
+  }
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: $blue;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  input {
+    padding: 0.875rem 1rem;
+    border: 2px solid lighten($beige, 5%);
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: $transition;
+    background: lighten($beige, 8%);
+
+    &:focus {
+      outline: none;
+      border-color: $green;
+      background: white;
+      box-shadow: 0 0 0 4px rgba($green, 0.1);
+    }
+
+    &::placeholder {
+      color: lighten($blue, 35%);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+}
+
+.form-error {
+  background: rgba($orange, 0.1);
+  border: 1px solid rgba($orange, 0.3);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  color: darken($orange, 10%);
+  font-size: 0.875rem;
+  animation: shake 0.4s ease-in-out;
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  75% {
+    transform: translateX(5px);
+  }
+}
+
+.auth-submit {
+  background: $green;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: $transition;
+  margin-top: 0.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 52px;
+
+  &:hover:not(:disabled) {
+    background: $green-dark;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba($green, 0.3);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+}
+
+.loading-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(white, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.auth-footer {
+  margin-top: 2rem;
+  text-align: center;
+  padding-top: 1.5rem;
+  border-top: 1px solid lighten($beige, 3%);
+
+  p {
+    color: lighten($blue, 20%);
+    margin: 0;
+    font-size: 0.9rem;
+  }
+}
+
+.auth-toggle {
+  background: none;
+  border: none;
+  color: $green;
+  font-weight: 600;
+  cursor: pointer;
+  margin-left: 0.5rem;
+  transition: $transition;
+  font-size: 0.9rem;
+
+  &:hover:not(:disabled) {
+    color: $green-dark;
+    text-decoration: underline;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+// Decorative elements
+.auth-decoration {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.decoration-circle {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.4;
+
+  &.circle-1 {
+    width: 400px;
+    height: 400px;
+    background: linear-gradient(135deg, $green 0%, transparent 70%);
+    top: -150px;
+    right: -100px;
+  }
+
+  &.circle-2 {
+    width: 300px;
+    height: 300px;
+    background: linear-gradient(135deg, $yellow 0%, transparent 70%);
+    bottom: -100px;
+    left: -50px;
+  }
+
+  &.circle-3 {
+    width: 200px;
+    height: 200px;
+    background: linear-gradient(135deg, $orange 0%, transparent 70%);
+    top: 50%;
+    left: 10%;
+    opacity: 0.2;
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 480px) {
+  .auth-container {
+    padding: 1rem;
+  }
+
+  .auth-card {
+    padding: 2rem 1.5rem;
+    border-radius: 16px;
+  }
+
+  .auth-header h1 {
+    font-size: 1.5rem;
+  }
+}
+

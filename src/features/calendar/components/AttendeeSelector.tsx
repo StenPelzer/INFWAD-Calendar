@@ -49,4 +49,3 @@ function AttendeeSelector({
 }
 
 export default AttendeeSelector
-

@@ -38,6 +38,7 @@ function CreateEvent({ selectedDate, setSelectedDate }: CreateEventProps) {
       startTime: eventTimeFrom,
       endTime: eventTimeTo,
       description: eventText || null,
+      attendeeIds: eventAttendees.map((a) => a.id),
     }
 
     try {

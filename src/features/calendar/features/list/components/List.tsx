@@ -1,6 +1,6 @@
 import {
-  useGetEvents,
   getEventsForMonth,
+  useGetEvents,
 } from '../../event/services/eventsGraphql.service'
 import type { CalendarViewProps } from '../../../types/CalendarType'
 

@@ -1,14 +1,30 @@
+import { gql } from '@apollo/client'
+import { useQuery } from '@apollo/client/react'
 import type { User } from '@/graphql/generated'
 
-export function useQueryGetAttendees() {
-  const attendees: Array<User> = [
-    { id: 1, name: 'Sten', color: 'orange', email: '0927439+sten@hr.nl', password: '', role: '', events: [], groups: [] },
-    { id: 2, name: 'Bert', color: 'blue', email: '0927439+bert@hr.nl', password: '', role: '', events: [], groups: [] },
-    { id: 3, name: 'Merel', color: 'green', email: '0927439+merel@hr.nl', password: '', role: '', events: [], groups: [] },
-  ]
+const GET_ATTENDEES_QUERY = gql`
+  query GetAttendees {
+    users {
+      id
+      name
+      color
+    }
+  }
+`
 
-  return { attendees }
+interface GetAttendeesQuery {
+  users: Array<User>
+}
+
+export function useQueryGetAttendees() {
+  const { data, loading, error } =
+    useQuery<GetAttendeesQuery>(GET_ATTENDEES_QUERY)
+
+  return {
+    attendees: data?.users || [],
+    loading,
+    error,
+  }
 }
 
 export default useQueryGetAttendees
-

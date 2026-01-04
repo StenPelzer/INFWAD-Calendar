@@ -57,7 +57,7 @@ function EventDetails({ event, onClose, isAdmin }: EventDetailsProps) {
 
     try {
       await updateEvent({ variables: { id: event.id, input } })
-      setIsEditing(false)
+      onClose()
     } catch (error) {
       console.error('Error updating event:', error)
       alert('Failed to update event. Please try again.')
@@ -318,14 +318,25 @@ function EventDetails({ event, onClose, isAdmin }: EventDetailsProps) {
           </div>
         )}
         {event.description && (
-          <div className="mt-4 pt-4 border-t">
-            <p className="text-gray-700 whitespace-pre-wrap">
-              {event.description}
-            </p>
+          <div className="flex items-center gap-2 text-gray-600">
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M16.862 3.487a2.598 2.598 0 013.65 3.697l-12.21 12.21a2 2 0 01-.707.445l-3.59 1.197a.75.75 0 01-.95-.95l1.197-3.59a2 2 0 01.445-.707l12.21-12.21zm2.121 2.122l-1.5-1.5"
+              />
+            </svg>
+            <span>{event.description}</span>
           </div>
         )}
         {isAdmin && (
-          <div className="flex gap-2 mt-6 pt-4 border-t">
+          <div className="flex gap-2 mt-6">
             <button
               type="button"
               onClick={() => setIsEditing(true)}

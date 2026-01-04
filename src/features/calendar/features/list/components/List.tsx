@@ -1,8 +1,6 @@
 import { useMemo } from 'react'
-import {
-  useGetEvents,
-  type EventFromQuery,
-} from '../../event/services/eventsGraphql.service'
+import { useGetEvents } from '../../event/services/eventsGraphql.service'
+import type { EventFromQuery } from '../../event/services/eventsGraphql.service'
 import type { CalendarViewProps } from '../../../types/CalendarType'
 import '../assets/styles.scss'
 

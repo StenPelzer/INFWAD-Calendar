@@ -1,12 +1,13 @@
 import { createFileRoute, redirect } from '@tanstack/react-router'
+import Calendar from '../features/calendar/components/Calendar'
 
-export const Route = createFileRoute('/')({
+export const Route = createFileRoute('/list')({
   beforeLoad: () => {
     const token = localStorage.getItem('auth_token')
     if (!token) {
       throw redirect({ to: '/auth' })
     }
-    // Redirect to list view
-    throw redirect({ to: '/list' })
   },
+  component: () => <Calendar view="list" />,
 })
+

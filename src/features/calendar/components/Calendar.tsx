@@ -1,10 +1,9 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { Link } from '@tanstack/react-router'
 import Modal from '../../../components/Modal'
 import MonthView from '../features/month/components/Month'
 import CreateEvent from '../features/event/components/CreateEvent'
 import EventDetails from '../features/event/components/EventDetails'
-import WeekView from '../features/week/components/Week'
-import DayView from '../features/day/components/Day'
 import ListView from '../features/list/components/List'
 import AttendeeSelector from './AttendeeSelector'
 import '../assets/Calendar.scss'
@@ -12,20 +11,46 @@ import type { User } from '@/graphql/generated'
 import type { EventFromQuery } from '../features/event/services/eventsGraphql.service'
 import { useAuth } from '@/context/AuthContext'
 
+const SELECTED_ATTENDEES_KEY = 'calendar_selected_attendees'
+
 function getDaysInMonth(year: number, month: number) {
   return new Date(year, month + 1, 0).getDate()
 }
 
-export default function Calendar() {
+function loadSelectedAttendees(): Array<User> {
+  try {
+    const stored = localStorage.getItem(SELECTED_ATTENDEES_KEY)
+    return stored ? JSON.parse(stored) : []
+  } catch {
+    return []
+  }
+}
+
+interface CalendarProps {
+  view: 'month' | 'list'
+}
+
+export default function Calendar({ view }: CalendarProps) {
   const { user } = useAuth()
   const isAdmin = user?.role === 'ADMIN'
   const today = new Date()
   const [currentMonth, setCurrentMonth] = useState(today.getMonth())
   const [currentYear, setCurrentYear] = useState(today.getFullYear())
-  const [selectedAttendees, setSelectedAttendees] = useState<Array<User>>([])
+  const [selectedAttendees, setSelectedAttendees] = useState<Array<User>>(
+    loadSelectedAttendees,
+  )
   const [createEventOnDay, setCreateEventOnDay] = useState<Date | null>(null)
-  const [selectedEvent, setSelectedEvent] = useState<EventFromQuery | null>(null)
-  const [view, setView] = useState<'month' | 'week' | 'day' | 'list'>('month')
+  const [selectedEvent, setSelectedEvent] = useState<EventFromQuery | null>(
+    null,
+  )
+
+  // Persist selected attendees to localStorage
+  useEffect(() => {
+    localStorage.setItem(
+      SELECTED_ATTENDEES_KEY,
+      JSON.stringify(selectedAttendees),
+    )
+  }, [selectedAttendees])
 
   const daysInMonth = getDaysInMonth(currentYear, currentMonth)
   const monthNames = [...Array(12).keys()].map((key) =>
@@ -95,36 +120,22 @@ export default function Calendar() {
             {monthNames[currentMonth]} {currentYear}
           </span>
           <div className="view-type-switcher">
-            <button
-              onClick={() => setView('month')}
+            <Link
+              to="/month"
               className={`px-2 py-1 rounded ${view === 'month' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
             >
               Month
-            </button>
-            <button
-              onClick={() => setView('week')}
-              className={`px-2 py-1 rounded ${view === 'week' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-            >
-              Week
-            </button>
-            <button
-              onClick={() => setView('day')}
-              className={`px-2 py-1 rounded ${view === 'day' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-            >
-              Day
-            </button>
-            <button
-              onClick={() => setView('list')}
+            </Link>
+            <Link
+              to="/list"
               className={`px-2 py-1 rounded ${view === 'list' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
             >
               List
-            </button>
+            </Link>
           </div>
         </div>
 
         {view === 'month' && <MonthView {...sharedProps} />}
-        {view === 'week' && <WeekView {...sharedProps} />}
-        {view === 'day' && <DayView {...sharedProps} />}
         {view === 'list' && <ListView {...sharedProps} />}
 
         {isAdmin && (
@@ -141,10 +152,7 @@ export default function Calendar() {
           </Modal>
         )}
 
-        <Modal
-          isOpen={!!selectedEvent}
-          onClose={() => setSelectedEvent(null)}
-        >
+        <Modal isOpen={!!selectedEvent} onClose={() => setSelectedEvent(null)}>
           {selectedEvent && (
             <EventDetails
               event={selectedEvent}

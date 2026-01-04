@@ -2,11 +2,14 @@ import React, { useState } from 'react'
 import {
   useDeleteEvent,
   useUpdateEvent,
+  useJoinEvent,
+  useLeaveEvent,
 } from '../services/eventsGraphql.service'
 import type { EventFromQuery } from '../services/eventsGraphql.service'
 import type { User } from '@/graphql/generated'
 import '../assets/styles.scss'
 import AttendeeSelector from '@/features/calendar/components/AttendeeSelector'
+import { useAuth } from '@/context/AuthContext'
 
 type EventInput = {
   title: string
@@ -24,6 +27,7 @@ type EventDetailsProps = {
 }
 
 function EventDetails({ event, onClose, isAdmin }: EventDetailsProps) {
+  const { user: currentUser } = useAuth()
   const [isEditing, setIsEditing] = useState(false)
   const [eventTitle, setEventTitle] = useState(event.title)
   const [eventDescription, setEventDescription] = useState(
@@ -41,7 +45,34 @@ function EventDetails({ event, onClose, isAdmin }: EventDetailsProps) {
   )
   const [updateEvent, { loading: updating }] = useUpdateEvent()
   const [deleteEvent, { loading: deleting }] = useDeleteEvent()
+  const [joinEvent, { loading: joining }] = useJoinEvent()
+  const [leaveEvent, { loading: leaving }] = useLeaveEvent()
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+
+  // Check if current user is attending this event
+  const isAttending = currentUser
+    ? event.attendees.some((a) => a.id === currentUser.id)
+    : false
+
+  async function handleJoinEvent() {
+    try {
+      await joinEvent({ variables: { eventId: event.id } })
+      onClose()
+    } catch (error) {
+      console.error('Error joining event:', error)
+      alert('Failed to join event. Please try again.')
+    }
+  }
+
+  async function handleLeaveEvent() {
+    try {
+      await leaveEvent({ variables: { eventId: event.id } })
+      onClose()
+    } catch (error) {
+      console.error('Error leaving event:', error)
+      alert('Failed to leave event. Please try again.')
+    }
+  }
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault()
@@ -351,6 +382,29 @@ function EventDetails({ event, onClose, isAdmin }: EventDetailsProps) {
             >
               Delete
             </button>
+          </div>
+        )}
+        {!isAdmin && currentUser && (
+          <div className="flex gap-2 mt-6">
+            {isAttending ? (
+              <button
+                type="button"
+                onClick={handleLeaveEvent}
+                disabled={leaving}
+                className="flex-1 py-2 px-4 bg-red-600 text-white font-semibold rounded-md shadow hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {leaving ? 'Leaving...' : 'Leave Event'}
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={handleJoinEvent}
+                disabled={joining}
+                className="flex-1 py-2 px-4 bg-green-600 text-white font-semibold rounded-md shadow hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {joining ? 'Joining...' : 'Join Event'}
+              </button>
+            )}
           </div>
         )}
       </div>

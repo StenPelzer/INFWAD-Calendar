@@ -13,7 +13,7 @@ public class Mutation
         [Service] IAuthService authService)
     {
         await using var db = await dbFactory.CreateDbContextAsync();
-        
+
         // Check if user already exists
         var existingUser = await db.Users.FirstOrDefaultAsync(u => u.Email == input.Email);
         if (existingUser != null)
@@ -52,7 +52,7 @@ public class Mutation
         [Service] IAuthService authService)
     {
         await using var db = await dbFactory.CreateDbContextAsync();
-        
+
         var user = await db.Users.FirstOrDefaultAsync(u => u.Email == input.Email);
         if (user == null)
         {
@@ -85,7 +85,7 @@ public class Mutation
     public async Task<Event> CreateEvent(CreateEventInput input, [Service] IDbContextFactory<AppDbContext> dbFactory)
     {
         int eventId;
-        
+
         // Step 1: Create the event
         await using (var db = await dbFactory.CreateDbContextAsync())
         {
@@ -106,16 +106,16 @@ public class Mutation
         if (input.AttendeeIds != null && input.AttendeeIds.Count > 0)
         {
             await using var db = await dbFactory.CreateDbContextAsync();
-            
+
             // Verify users exist
             var existingUserIds = await db.Users
                 .Where(u => input.AttendeeIds.Contains(u.Id))
                 .Select(u => u.Id)
                 .ToListAsync();
-            
+
             // Disable auto-detect changes to prevent NavigationFixer from running (composite key issue)
             db.ChangeTracker.AutoDetectChangesEnabled = false;
-            
+
             foreach (var userId in existingUserIds)
             {
                 db.EventAttendees.Add(new EventAttendee
@@ -124,7 +124,7 @@ public class Mutation
                     UserId = userId
                 });
             }
-            
+
             await db.SaveChangesAsync();
         }
 

@@ -99,7 +99,6 @@ export default function ListView({
   if (!isAdmin) {
     return (
       <div className="list-view">
-        <h2 className="text-lg font-semibold mb-4">Upcoming Events</h2>
         {events.length === 0 ? (
           <p className="text-gray-500">No upcoming events</p>
         ) : (
@@ -156,7 +155,7 @@ export default function ListView({
               className={`mb-2 p-2 rounded border ${createEventOnDay && createEventOnDay.getDate() === day ? 'bg-blue-100' : ''}`}
             >
               <div className="list-day-header">
-                <span className="font-bold text-blue-700">
+                <span className="font-bold">
                   {day} {monthNames[currentMonth]}
                 </span>
                 {isAdmin && (

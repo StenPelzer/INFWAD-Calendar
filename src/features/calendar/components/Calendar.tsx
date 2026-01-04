@@ -102,23 +102,31 @@ export default function Calendar({ view }: CalendarProps) {
       />
       <div className="calendar">
         <div className="date-header">
-          <div className="navigation">
-            <button
-              onClick={prevMonth}
-              className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
-            >
-              Prev
-            </button>
-            <button
-              onClick={nextMonth}
-              className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
-            >
-              Next
-            </button>
-          </div>
-          <span className="date-display">
-            {monthNames[currentMonth]} {currentYear}
-          </span>
+          {(view === 'month' || isAdmin) && (
+            <div className="navigation">
+              <button
+                onClick={prevMonth}
+                className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
+              >
+                Prev
+              </button>
+              <button
+                onClick={nextMonth}
+                className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
+              >
+                Next
+              </button>
+            </div>
+          )}
+          {(view === 'month' || isAdmin) && (
+            <span className="date-display">
+              {monthNames[currentMonth]} {currentYear}
+            </span>
+          )}
+          {view === 'list' && !isAdmin && <span className="filler"></span>}
+          {view === 'list' && !isAdmin && (
+            <span className="date-display">Upcoming Events</span>
+          )}
           <div className="view-type-switcher">
             <Link
               to="/month"

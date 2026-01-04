@@ -8,4 +8,5 @@ export interface CalendarViewProps {
   monthNames: Array<string>
   daysInMonth: number
   selectedAttendees: Array<User>
+  isAdmin: boolean
 }

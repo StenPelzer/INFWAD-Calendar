@@ -10,7 +10,7 @@ export interface User {
   id: number
   name: string
   email: string
-  role: 'Basic' | 'Admin'
+  role: 'BASIC' | 'ADMIN'
   color?: string
 }
 
@@ -88,4 +88,3 @@ export function useAuth() {
   }
   return context
 }
-

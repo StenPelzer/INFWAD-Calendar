@@ -8,12 +8,15 @@ import ListView from '../features/list/components/List'
 import AttendeeSelector from './AttendeeSelector'
 import '../assets/Calendar.scss'
 import type { User } from '@/graphql/generated'
+import { useAuth } from '@/context/AuthContext'
 
 function getDaysInMonth(year: number, month: number) {
   return new Date(year, month + 1, 0).getDate()
 }
 
 export default function Calendar() {
+  const { user } = useAuth()
+  const isAdmin = user?.role === 'ADMIN'
   const today = new Date()
   const [currentMonth, setCurrentMonth] = useState(today.getMonth())
   const [currentYear, setCurrentYear] = useState(today.getFullYear())
@@ -53,11 +56,12 @@ export default function Calendar() {
   const sharedProps = {
     currentYear,
     currentMonth,
-    setCreateEventOnDay,
+    setCreateEventOnDay: isAdmin ? setCreateEventOnDay : () => {},
     createEventOnDay,
     monthNames,
     daysInMonth,
     selectedAttendees,
+    isAdmin,
   }
 
   return (
@@ -119,17 +123,19 @@ export default function Calendar() {
         {view === 'day' && <DayView {...sharedProps} />}
         {view === 'list' && <ListView {...sharedProps} />}
 
-        <Modal
-          isOpen={!!createEventOnDay}
-          onClose={() => closeCreateEventModal()}
-        >
-          {createEventOnDay && (
-            <CreateEvent
-              selectedDate={createEventOnDay}
-              setSelectedDate={setCreateEventOnDay}
-            />
-          )}
-        </Modal>
+        {isAdmin && (
+          <Modal
+            isOpen={!!createEventOnDay}
+            onClose={() => closeCreateEventModal()}
+          >
+            {createEventOnDay && (
+              <CreateEvent
+                selectedDate={createEventOnDay}
+                setSelectedDate={setCreateEventOnDay}
+              />
+            )}
+          </Modal>
+        )}
       </div>
     </div>
   )

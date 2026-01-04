@@ -1,3 +1,4 @@
+using HotChocolate.Authorization;
 using INFWAD.Calendar.Backend.Data;
 using INFWAD.Calendar.Backend.Models;
 using INFWAD.Calendar.Backend.Services;
@@ -82,6 +83,7 @@ public class Mutation
         };
     }
 
+    [Authorize(Roles = new[] { "Admin" })]
     public async Task<Event> CreateEvent(CreateEventInput input, [Service] IDbContextFactory<AppDbContext> dbFactory)
     {
         int eventId;
@@ -139,6 +141,7 @@ public class Mutation
         }
     }
 
+    [Authorize(Roles = new[] { "Admin" })]
     public async Task<Event?> UpdateEvent(int id, Event input, [Service] IDbContextFactory<AppDbContext> dbFactory)
     {
         await using var db = await dbFactory.CreateDbContextAsync();
@@ -153,6 +156,7 @@ public class Mutation
         return existing;
     }
 
+    [Authorize(Roles = new[] { "Admin" })]
     public async Task<bool> DeleteEvent(int id, [Service] IDbContextFactory<AppDbContext> dbFactory)
     {
         await using var db = await dbFactory.CreateDbContextAsync();

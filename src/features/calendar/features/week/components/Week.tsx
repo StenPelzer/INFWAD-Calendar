@@ -13,6 +13,7 @@ export default function WeekView({
   monthNames,
   daysInMonth,
   selectedAttendees,
+  isAdmin,
 }: CalendarViewProps) {
   const { data, loading, error } = useGetEvents()
   const today = new Date()
@@ -69,16 +70,22 @@ export default function WeekView({
                 key={i}
                 className={`mb-2 p-2 rounded border ${createEventOnDay && createEventOnDay.getDate() === day ? 'bg-blue-100' : ''}`}
               >
-                <button
-                  className="font-bold mr-2 text-blue-700 hover:underline"
-                  onClick={() =>
-                    setCreateEventOnDay(
-                      new Date(currentYear, currentMonth, day),
-                    )
-                  }
-                >
-                  {day} {monthNames[currentMonth]}
-                </button>
+                {isAdmin ? (
+                  <button
+                    className="font-bold mr-2 hover:underline"
+                    onClick={() =>
+                      setCreateEventOnDay(
+                        new Date(currentYear, currentMonth, day),
+                      )
+                    }
+                  >
+                    {day} {monthNames[currentMonth]}
+                  </button>
+                ) : (
+                  <span className="font-bold mr-2">
+                    {day} {monthNames[currentMonth]}
+                  </span>
+                )}
                 <div className="events">
                   {events
                     .filter((e) => {

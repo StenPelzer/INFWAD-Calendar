@@ -11,6 +11,7 @@ export default function MonthView({
   setCreateEventOnDay,
   daysInMonth,
   selectedAttendees,
+  isAdmin,
 }: CalendarViewProps) {
   const { data, loading, error } = useGetEvents()
   const firstDay = new Date(currentYear, currentMonth, 1).getDay()
@@ -90,14 +91,16 @@ export default function MonthView({
                     <div className="calendar-day">
                       <div className="calendar-day-header">
                         <button className="day-number">{day}</button>
-                        <button
-                          className="add-event"
-                          onClick={() =>
-                            setCreateEventOnDay(
-                              new Date(currentYear, currentMonth, day),
-                            )
-                          }
-                        ></button>
+                        {isAdmin && (
+                          <button
+                            className="add-event"
+                            onClick={() =>
+                              setCreateEventOnDay(
+                                new Date(currentYear, currentMonth, day),
+                              )
+                            }
+                          ></button>
+                        )}
                       </div>
                       <div className="events">
                         {events

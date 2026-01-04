@@ -1,8 +1,17 @@
 import React from 'react'
 import { useCreateEvent } from '../services/eventsGraphql.service'
-import type { CreateEventInput, User } from '@/graphql/generated'
+import type { User } from '@/graphql/generated'
 import '../assets/styles.scss'
 import AttendeeSelector from '@/features/calendar/components/AttendeeSelector'
+
+type EventInput = {
+  title: string
+  date: string
+  startTime: string
+  endTime: string
+  description: string | null
+  attendeeIds: Array<number>
+}
 
 type CreateEventProps = {
   selectedDate: Date
@@ -32,7 +41,7 @@ function CreateEvent({ selectedDate, setSelectedDate }: CreateEventProps) {
     // Format date as YYYY-MM-DD for LocalDate
     const dateStr = selectedDate.toLocaleDateString('en-CA')
 
-    const input: CreateEventInput = {
+    const input: EventInput = {
       title: eventTitle,
       date: dateStr,
       startTime: eventTimeFrom,

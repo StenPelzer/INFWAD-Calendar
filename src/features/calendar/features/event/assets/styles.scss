@@ -1,6 +1,7 @@
 @use '../../../../../_variables.scss' as *;
 
-.create-event-form {
+.create-event-form,
+.event-details-form {
   width: 400px;
 
   @media screen and (max-width: 450px) {

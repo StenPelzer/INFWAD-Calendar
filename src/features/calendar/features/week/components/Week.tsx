@@ -14,6 +14,7 @@ export default function WeekView({
   daysInMonth,
   selectedAttendees,
   isAdmin,
+  onEventClick,
 }: CalendarViewProps) {
   const { data, loading, error } = useGetEvents()
   const today = new Date()
@@ -96,12 +97,17 @@ export default function WeekView({
                       return eventDate.getDate() === day
                     })
                     .map((event, idx: number) => (
-                      <div key={idx} className="event">
+                      <button
+                        key={idx}
+                        className="event"
+                        onClick={() => onEventClick(event)}
+                        type="button"
+                      >
                         <span className="event-time">
                           {event.startTime} - {event.endTime}
                         </span>
                         <span className="event-title">{event.title}</span>
-                      </div>
+                      </button>
                     ))}
                 </div>
               </li>

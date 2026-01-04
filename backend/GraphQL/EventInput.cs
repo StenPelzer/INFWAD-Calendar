@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace INFWAD.Calendar.Backend.GraphQL;
 
-public class CreateEventInput
+public class EventInput
 {
     [Required]
     public string Title { get; set; } = string.Empty;
@@ -20,3 +20,4 @@ public class CreateEventInput
 
     public List<int>? AttendeeIds { get; set; }
 }
+

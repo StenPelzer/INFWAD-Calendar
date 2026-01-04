@@ -12,6 +12,7 @@ export default function DayView({
   monthNames,
   daysInMonth,
   selectedAttendees,
+  onEventClick,
 }: CalendarViewProps) {
   const { data, loading, error } = useGetEvents()
   const events =
@@ -43,6 +44,33 @@ export default function DayView({
           </button>
         ))}
       </div>
+      {createEventOnDay && (
+        <div className="mt-4">
+          <h3 className="font-semibold mb-2">
+            Events for {createEventOnDay.getDate()}{' '}
+            {monthNames[currentMonth]}
+          </h3>
+          <div className="events space-y-2">
+            {events.length === 0 ? (
+              <p className="text-gray-500">No events for this day</p>
+            ) : (
+              events.map((event, idx: number) => (
+                <button
+                  key={idx}
+                  className="event block w-full text-left p-2 border rounded hover:bg-gray-50"
+                  onClick={() => onEventClick(event)}
+                  type="button"
+                >
+                  <span className="event-time font-medium">
+                    {event.startTime} - {event.endTime}
+                  </span>
+                  <span className="event-title ml-2">{event.title}</span>
+                </button>
+              ))
+            )}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

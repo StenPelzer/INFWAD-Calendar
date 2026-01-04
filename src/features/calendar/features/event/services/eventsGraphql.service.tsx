@@ -4,7 +4,7 @@ import type { GetEventsQuery, User } from '@/graphql/generated'
 import { apolloClient } from '@/graphql/client'
 
 // Type for events returned from the query (partial Event type)
-type EventFromQuery = GetEventsQuery['events'][number]
+export type EventFromQuery = GetEventsQuery['events'][number]
 
 // Custom GraphQL query for fetching events
 const GET_EVENTS_QUERY = gql`
@@ -27,7 +27,7 @@ const GET_EVENTS_QUERY = gql`
 
 // Mutation for creating events
 const CREATE_EVENT_MUTATION = gql`
-  mutation CreateEvent($input: CreateEventInput!) {
+  mutation CreateEvent($input: EventInput!) {
     createEvent(input: $input) {
       id
       title
@@ -41,6 +41,32 @@ const CREATE_EVENT_MUTATION = gql`
         color
       }
     }
+  }
+`
+
+// Mutation for updating events
+const UPDATE_EVENT_MUTATION = gql`
+  mutation UpdateEvent($id: Int!, $input: EventInput!) {
+    updateEvent(id: $id, input: $input) {
+      id
+      title
+      date
+      startTime
+      endTime
+      description
+      attendees {
+        id
+        name
+        color
+      }
+    }
+  }
+`
+
+// Mutation for deleting events
+const DELETE_EVENT_MUTATION = gql`
+  mutation DeleteEvent($id: Int!) {
+    deleteEvent(id: $id)
   }
 `
 
@@ -107,6 +133,36 @@ export function useGetEventsLazy() {
  */
 export function useCreateEvent() {
   return useMutation(CREATE_EVENT_MUTATION, {
+    refetchQueries: [{ query: GET_EVENTS_QUERY }],
+  })
+}
+
+/**
+ * Hook to update an event using GraphQL mutation
+ *
+ * @example
+ * ```tsx
+ * const [updateEvent, { loading, error }] = useUpdateEvent()
+ * await updateEvent({ variables: { id: 1, input: { title: '...', ... } } })
+ * ```
+ */
+export function useUpdateEvent() {
+  return useMutation(UPDATE_EVENT_MUTATION, {
+    refetchQueries: [{ query: GET_EVENTS_QUERY }],
+  })
+}
+
+/**
+ * Hook to delete an event using GraphQL mutation
+ *
+ * @example
+ * ```tsx
+ * const [deleteEvent, { loading, error }] = useDeleteEvent()
+ * await deleteEvent({ variables: { id: 1 } })
+ * ```
+ */
+export function useDeleteEvent() {
+  return useMutation(DELETE_EVENT_MUTATION, {
     refetchQueries: [{ query: GET_EVENTS_QUERY }],
   })
 }
@@ -226,6 +282,8 @@ export default {
   getEvents,
   useGetEventsLazy,
   useCreateEvent,
+  useUpdateEvent,
+  useDeleteEvent,
   getEventsForMonth,
   getEventsForDay,
   getEventsForWeek,

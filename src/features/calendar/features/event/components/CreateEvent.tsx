@@ -30,7 +30,7 @@ function CreateEvent({ selectedDate, setSelectedDate }: CreateEventProps) {
     e.preventDefault()
 
     // Format date as YYYY-MM-DD for LocalDate
-    const dateStr = selectedDate.toISOString().split('T')[0]
+    const dateStr = selectedDate.toLocaleDateString('en-CA')
 
     const input: CreateEventInput = {
       title: eventTitle,
@@ -89,7 +89,7 @@ function CreateEvent({ selectedDate, setSelectedDate }: CreateEventProps) {
           <input
             id="event-date"
             type="date"
-            value={selectedDate.toLocaleDateString('en-CA').split('T')[0]}
+            value={selectedDate.toLocaleDateString('en-CA')}
             onChange={(e) => {
               setSelectedDate(new Date(e.target.value))
             }}

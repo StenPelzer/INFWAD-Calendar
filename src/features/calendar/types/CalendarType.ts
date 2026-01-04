@@ -1,4 +1,5 @@
 import type { User } from '@/graphql/generated'
+import type { EventFromQuery } from '../features/event/services/eventsGraphql.service'
 
 export interface CalendarViewProps {
   currentYear: number
@@ -9,4 +10,5 @@ export interface CalendarViewProps {
   daysInMonth: number
   selectedAttendees: Array<User>
   isAdmin: boolean
+  onEventClick: (event: EventFromQuery) => void
 }

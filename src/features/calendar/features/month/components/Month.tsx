@@ -12,6 +12,7 @@ export default function MonthView({
   daysInMonth,
   selectedAttendees,
   isAdmin,
+  onEventClick,
 }: CalendarViewProps) {
   const { data, loading, error } = useGetEvents()
   const firstDay = new Date(currentYear, currentMonth, 1).getDay()
@@ -112,16 +113,21 @@ export default function MonthView({
                             return eventDate.getDate() === day
                           })
                           .map((event, idx: number) => (
-                            <div
+                            <button
                               key={idx}
                               className="event"
                               style={{ background: getEventBackground(event) }}
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                onEventClick(event)
+                              }}
+                              type="button"
                             >
                               <span className="event-time">
                                 {event.startTime}
                               </span>
                               <span className="event-title">{event.title}</span>
-                            </div>
+                            </button>
                           ))}
                       </div>
                     </div>

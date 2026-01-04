@@ -36,15 +36,6 @@ export type AuthPayload = {
   user: Maybe<User>;
 };
 
-export type CreateEventInput = {
-  attendeeIds: InputMaybe<Array<Scalars['Int']['input']>>;
-  date: Scalars['LocalDate']['input'];
-  description: InputMaybe<Scalars['String']['input']>;
-  endTime: Scalars['String']['input'];
-  startTime: Scalars['String']['input'];
-  title: Scalars['String']['input'];
-};
-
 export type Event = {
   __typename?: 'Event';
   attendees: Array<User>;
@@ -65,10 +56,10 @@ export type EventAttendee = {
 };
 
 export type EventInput = {
+  attendeeIds: InputMaybe<Array<Scalars['Int']['input']>>;
   date: Scalars['LocalDate']['input'];
   description: InputMaybe<Scalars['String']['input']>;
   endTime: Scalars['String']['input'];
-  id: Scalars['Int']['input'];
   startTime: Scalars['String']['input'];
   title: Scalars['String']['input'];
 };
@@ -105,7 +96,7 @@ export type Mutation = {
 
 
 export type MutationCreateEventArgs = {
-  input: CreateEventInput;
+  input: EventInput;
 };
 
 
@@ -220,11 +211,26 @@ export type GetEventsQueryVariables = Exact<{ [key: string]: never; }>;
 export type GetEventsQuery = { __typename?: 'Query', events: Array<{ __typename?: 'Event', id: number, title: string, date: any, startTime: string, endTime: string, description: string | null, attendees: Array<{ __typename?: 'User', id: number, name: string, color: string }> }> };
 
 export type CreateEventMutationVariables = Exact<{
-  input: CreateEventInput;
+  input: EventInput;
 }>;
 
 
 export type CreateEventMutation = { __typename?: 'Mutation', createEvent: { __typename?: 'Event', id: number, title: string, date: any, startTime: string, endTime: string, description: string | null, attendees: Array<{ __typename?: 'User', id: number, name: string, color: string }> } };
+
+export type UpdateEventMutationVariables = Exact<{
+  id: Scalars['Int']['input'];
+  input: EventInput;
+}>;
+
+
+export type UpdateEventMutation = { __typename?: 'Mutation', updateEvent: { __typename?: 'Event', id: number, title: string, date: any, startTime: string, endTime: string, description: string | null, attendees: Array<{ __typename?: 'User', id: number, name: string, color: string }> } | null };
+
+export type DeleteEventMutationVariables = Exact<{
+  id: Scalars['Int']['input'];
+}>;
+
+
+export type DeleteEventMutation = { __typename?: 'Mutation', deleteEvent: boolean };
 
 export type RegisterMutationVariables = Exact<{
   input: RegisterInput;
@@ -337,7 +343,7 @@ export type GetEventsLazyQueryHookResult = ReturnType<typeof useGetEventsLazyQue
 export type GetEventsSuspenseQueryHookResult = ReturnType<typeof useGetEventsSuspenseQuery>;
 export type GetEventsQueryResult = Apollo.QueryResult<GetEventsQuery, GetEventsQueryVariables>;
 export const CreateEventDocument = gql`
-    mutation CreateEvent($input: CreateEventInput!) {
+    mutation CreateEvent($input: EventInput!) {
   createEvent(input: $input) {
     id
     title
@@ -379,6 +385,81 @@ export function useCreateEventMutation(baseOptions?: Apollo.MutationHookOptions<
 export type CreateEventMutationHookResult = ReturnType<typeof useCreateEventMutation>;
 export type CreateEventMutationResult = Apollo.MutationResult<CreateEventMutation>;
 export type CreateEventMutationOptions = Apollo.BaseMutationOptions<CreateEventMutation, CreateEventMutationVariables>;
+export const UpdateEventDocument = gql`
+    mutation UpdateEvent($id: Int!, $input: EventInput!) {
+  updateEvent(id: $id, input: $input) {
+    id
+    title
+    date
+    startTime
+    endTime
+    description
+    attendees {
+      id
+      name
+      color
+    }
+  }
+}
+    `;
+export type UpdateEventMutationFn = Apollo.MutationFunction<UpdateEventMutation, UpdateEventMutationVariables>;
+
+/**
+ * __useUpdateEventMutation__
+ *
+ * To run a mutation, you first call `useUpdateEventMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateEventMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateEventMutation, { data, loading, error }] = useUpdateEventMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useUpdateEventMutation(baseOptions?: Apollo.MutationHookOptions<UpdateEventMutation, UpdateEventMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateEventMutation, UpdateEventMutationVariables>(UpdateEventDocument, options);
+      }
+export type UpdateEventMutationHookResult = ReturnType<typeof useUpdateEventMutation>;
+export type UpdateEventMutationResult = Apollo.MutationResult<UpdateEventMutation>;
+export type UpdateEventMutationOptions = Apollo.BaseMutationOptions<UpdateEventMutation, UpdateEventMutationVariables>;
+export const DeleteEventDocument = gql`
+    mutation DeleteEvent($id: Int!) {
+  deleteEvent(id: $id)
+}
+    `;
+export type DeleteEventMutationFn = Apollo.MutationFunction<DeleteEventMutation, DeleteEventMutationVariables>;
+
+/**
+ * __useDeleteEventMutation__
+ *
+ * To run a mutation, you first call `useDeleteEventMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteEventMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteEventMutation, { data, loading, error }] = useDeleteEventMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useDeleteEventMutation(baseOptions?: Apollo.MutationHookOptions<DeleteEventMutation, DeleteEventMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteEventMutation, DeleteEventMutationVariables>(DeleteEventDocument, options);
+      }
+export type DeleteEventMutationHookResult = ReturnType<typeof useDeleteEventMutation>;
+export type DeleteEventMutationResult = Apollo.MutationResult<DeleteEventMutation>;
+export type DeleteEventMutationOptions = Apollo.BaseMutationOptions<DeleteEventMutation, DeleteEventMutationVariables>;
 export const RegisterDocument = gql`
     mutation Register($input: RegisterInput!) {
   register(input: $input) {

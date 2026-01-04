@@ -12,6 +12,7 @@ export default function ListView({
   monthNames,
   daysInMonth,
   selectedAttendees,
+  onEventClick,
 }: CalendarViewProps) {
   const { data, loading, error } = useGetEvents()
   const events = data?.events
@@ -55,12 +56,17 @@ export default function ListView({
                     return eventDate.getDate() === day
                   })
                   .map((event, idx: number) => (
-                    <div key={idx} className="event">
+                    <button
+                      key={idx}
+                      className="event"
+                      onClick={() => onEventClick(event)}
+                      type="button"
+                    >
                       <span className="event-time">
                         {event.startTime} - {event.endTime}
                       </span>
                       <span className="event-title">{event.title}</span>
-                    </div>
+                    </button>
                   ))}
               </div>
             </li>

@@ -84,11 +84,11 @@ public class Mutation
     }
 
     [Authorize(Roles = new[] { "Admin" })]
-    public async Task<Event> CreateEvent(CreateEventInput input, [Service] IDbContextFactory<AppDbContext> dbFactory)
+    public async Task<Event> CreateEvent(EventInput input, [Service] IDbContextFactory<AppDbContext> dbFactory)
     {
         int eventId;
 
-        // Step 1: Create the event
+        // Create the event
         await using (var db = await dbFactory.CreateDbContextAsync())
         {
             var newEvent = new Event
@@ -104,7 +104,7 @@ public class Mutation
             eventId = newEvent.Id;
         }
 
-        // Step 2: Add attendees with change tracking disabled to avoid NavigationFixer issues
+        // Add attendees with change tracking disabled to avoid NavigationFixer issues
         if (input.AttendeeIds != null && input.AttendeeIds.Count > 0)
         {
             await using var db = await dbFactory.CreateDbContextAsync();
@@ -130,7 +130,7 @@ public class Mutation
             await db.SaveChangesAsync();
         }
 
-        // Step 3: Return the complete event with attendees
+        // Return the complete event with attendees
         await using (var db = await dbFactory.CreateDbContextAsync())
         {
             return await db.Events
@@ -142,18 +142,85 @@ public class Mutation
     }
 
     [Authorize(Roles = new[] { "Admin" })]
-    public async Task<Event?> UpdateEvent(int id, Event input, [Service] IDbContextFactory<AppDbContext> dbFactory)
+    public async Task<Event?> UpdateEvent(int id, EventInput input, [Service] IDbContextFactory<AppDbContext> dbFactory)
     {
-        await using var db = await dbFactory.CreateDbContextAsync();
-        var existing = await db.Events.FindAsync(id);
-        if (existing is null) return null;
-        existing.Title = input.Title;
-        existing.Date = input.Date;
-        existing.StartTime = input.StartTime;
-        existing.EndTime = input.EndTime;
-        existing.Description = input.Description;
-        await db.SaveChangesAsync();
-        return existing;
+        // Update event properties
+        await using (var db = await dbFactory.CreateDbContextAsync())
+        {
+            var existing = await db.Events.FindAsync(id);
+            if (existing is null) return null;
+            
+            existing.Title = input.Title;
+            existing.Date = input.Date;
+            existing.StartTime = input.StartTime;
+            existing.EndTime = input.EndTime;
+            existing.Description = input.Description;
+            await db.SaveChangesAsync();
+        }
+
+        // Update attendees - remove old ones
+        await using (var db = await dbFactory.CreateDbContextAsync())
+        {
+            // Get current attendees
+            var currentAttendees = await db.EventAttendees
+                .Where(ea => ea.EventId == id)
+                .ToListAsync();
+
+            var newAttendeeIds = input.AttendeeIds ?? new List<int>();
+
+            // Remove attendees that are no longer in the list
+            var attendeesToRemove = currentAttendees
+                .Where(ea => !newAttendeeIds.Contains(ea.UserId))
+                .ToList();
+
+            db.EventAttendees.RemoveRange(attendeesToRemove);
+            await db.SaveChangesAsync();
+        }
+
+        // Update attendees - add new ones
+        if (input.AttendeeIds != null && input.AttendeeIds.Count > 0)
+        {
+            await using var db = await dbFactory.CreateDbContextAsync();
+
+            // Get current attendee IDs after removal
+            var currentAttendeeIds = await db.EventAttendees
+                .Where(ea => ea.EventId == id)
+                .Select(ea => ea.UserId)
+                .ToListAsync();
+
+            // Verify new users exist
+            var existingUserIds = await db.Users
+                .Where(u => input.AttendeeIds.Contains(u.Id))
+                .Select(u => u.Id)
+                .ToListAsync();
+
+            // Disable auto-detect changes to prevent NavigationFixer issues
+            db.ChangeTracker.AutoDetectChangesEnabled = false;
+
+            foreach (var userId in existingUserIds)
+            {
+                if (!currentAttendeeIds.Contains(userId))
+                {
+                    db.EventAttendees.Add(new EventAttendee
+                    {
+                        EventId = id,
+                        UserId = userId
+                    });
+                }
+            }
+
+            await db.SaveChangesAsync();
+        }
+
+        // Return the complete event with attendees
+        await using (var db = await dbFactory.CreateDbContextAsync())
+        {
+            return await db.Events
+                .AsNoTracking()
+                .Include(e => e.EventAttendees)
+                    .ThenInclude(ea => ea.User)
+                .FirstAsync(e => e.Id == id);
+        }
     }
 
     [Authorize(Roles = new[] { "Admin" })]

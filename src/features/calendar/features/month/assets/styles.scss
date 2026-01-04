@@ -19,5 +19,17 @@
 
   .events {
     flex-grow: 1;
+
+    .event {
+      width: 100%;
+      text-align: left;
+      cursor: pointer;
+      border: none;
+      transition: opacity 0.15s ease-in-out;
+
+      &:hover {
+        opacity: 0.8;
+      }
+    }
   }
 }

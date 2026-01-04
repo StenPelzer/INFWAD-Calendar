@@ -2,12 +2,14 @@ import { useState } from 'react'
 import Modal from '../../../components/Modal'
 import MonthView from '../features/month/components/Month'
 import CreateEvent from '../features/event/components/CreateEvent'
+import EventDetails from '../features/event/components/EventDetails'
 import WeekView from '../features/week/components/Week'
 import DayView from '../features/day/components/Day'
 import ListView from '../features/list/components/List'
 import AttendeeSelector from './AttendeeSelector'
 import '../assets/Calendar.scss'
 import type { User } from '@/graphql/generated'
+import type { EventFromQuery } from '../features/event/services/eventsGraphql.service'
 import { useAuth } from '@/context/AuthContext'
 
 function getDaysInMonth(year: number, month: number) {
@@ -22,6 +24,7 @@ export default function Calendar() {
   const [currentYear, setCurrentYear] = useState(today.getFullYear())
   const [selectedAttendees, setSelectedAttendees] = useState<Array<User>>([])
   const [createEventOnDay, setCreateEventOnDay] = useState<Date | null>(null)
+  const [selectedEvent, setSelectedEvent] = useState<EventFromQuery | null>(null)
   const [view, setView] = useState<'month' | 'week' | 'day' | 'list'>('month')
 
   const daysInMonth = getDaysInMonth(currentYear, currentMonth)
@@ -62,6 +65,7 @@ export default function Calendar() {
     daysInMonth,
     selectedAttendees,
     isAdmin,
+    onEventClick: setSelectedEvent,
   }
 
   return (
@@ -136,6 +140,19 @@ export default function Calendar() {
             )}
           </Modal>
         )}
+
+        <Modal
+          isOpen={!!selectedEvent}
+          onClose={() => setSelectedEvent(null)}
+        >
+          {selectedEvent && (
+            <EventDetails
+              event={selectedEvent}
+              onClose={() => setSelectedEvent(null)}
+              isAdmin={isAdmin}
+            />
+          )}
+        </Modal>
       </div>
     </div>
   )

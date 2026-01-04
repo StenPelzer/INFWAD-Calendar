@@ -60,6 +60,36 @@ export default function ListView({
 }: CalendarViewProps) {
   const { data, loading, error } = useGetEvents()
 
+  function getEventBackground(event: {
+    attendees: Array<{ id: number; color: string | null }>
+  }): string {
+    if (!isAdmin) {
+      return ''
+    }
+
+    const selectedEventAttendees = event.attendees.filter((attendee) =>
+      selectedAttendees.some((sa) => sa.id === attendee.id),
+    )
+
+    if (selectedEventAttendees.length === 0) {
+      return ''
+    }
+
+    if (selectedEventAttendees.length === 1) {
+      return selectedEventAttendees[0].color || 'gray'
+    }
+
+    let linearGradient = 'linear-gradient(130deg, '
+    const colorStops = selectedEventAttendees.map((attendee, index) => {
+      const color = attendee.color || 'gray'
+      const percentageStart = (index / selectedEventAttendees.length) * 100
+      const percentageEnd = ((index + 1) / selectedEventAttendees.length) * 100
+      return `${color} ${percentageStart}%, ${color} ${percentageEnd}%`
+    })
+    linearGradient += colorStops.join(', ') + ')'
+    return linearGradient
+  }
+
   // For non-admin users, show only upcoming events
   // For admin users, show all events for the current month
   const events = useMemo(() => {
@@ -107,6 +137,7 @@ export default function ListView({
                 <li key={event.id} className="mb-2 p-3 rounded border">
                   <button
                     className="event w-full text-left"
+                    style={{ background: getEventBackground(event) }}
                     onClick={() => onEventClick(event)}
                     type="button"
                   >
@@ -172,6 +203,7 @@ export default function ListView({
                   <button
                     key={event.id}
                     className="event"
+                    style={{ background: getEventBackground(event) }}
                     onClick={() => onEventClick(event)}
                     type="button"
                   >

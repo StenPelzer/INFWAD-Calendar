@@ -57,7 +57,7 @@ public class DataSeeder
             new User { Name = "Maurice Gallen", Email = "maurice@infwad.nl", Role = UserRole.Basic, PasswordHash = _authService.HashPassword("basic123"), Color = "#3498DB" },
             new User { Name = "Ruud Berends", Email = "ruud@infwad.nl", Role = UserRole.Basic, PasswordHash = _authService.HashPassword("basic123"), Color = "#E67E22" },
             new User { Name = "Bart Meijer", Email = "bart@infwad.nl", Role = UserRole.Basic, PasswordHash = _authService.HashPassword("basic123"), Color = "#2ECC71" },
-            new User { Name = "Jeroen ten Have", Email = "jeroen@infwad.nl", Role = UserRole.Basic, PasswordHash = _authService.HashPassword("basic123"), Color = "#95A5A6" }
+            new User { Name = "Jeroen Haven", Email = "jeroen@infwad.nl", Role = UserRole.Basic, PasswordHash = _authService.HashPassword("basic123"), Color = "#95A5A6" }
         };
 
         _context.Users.Add(adminUser);

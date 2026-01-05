@@ -1,0 +1,17 @@
+Feature ID	Categorie	Omschrijving Feature
+1.1	Frontend	Login Screen component, verbruikt login API, toont API-berichten, redirect naar dashboard na admin login, redirect naar login bij ongeautoriseerde toegang admin dashboard 1
+1.2	Frontend	Administratief Dashboard: Overzichtstabel van alle events, formulier voor nieuwe events (POST), formulier voor bewerken events (UPDATE), knop voor verwijderen events (met pop-up), lijst van deelnemers per event 2
+1.3	Frontend	Homepage: Lijst met toekomstige events, klik op event leidt naar detailpagina, alleen zichtbaar voor ingelogde gebruikers (anders redirect naar login) 3
+1.4	Frontend	Event Deelname: Formulier voor deelname (POST structuur), mogelijkheid tot verwijderen van event uit eigen kalender 4
+1.5	Frontend	Kamer Boeken: Logged-in gebruikers kunnen beschikbare kamers boeken voor een dag/tijd, overzicht van kamerbeschikbaarheid past zich aan 5555
+1.6	Frontend	Multi-Page Navigatie: Gebruik van React Router, URL reflecteert huidige view, correct laden component/pagina bij direct URL-bezoek, ondersteuning voor URL-parameters 6
+1.7	Frontend	Kantoor Aanwezigheid: UI voor gebruiker om eigen kantoorattendance op te geven, data wordt opgeslagen/opgehaald (data persistence is backend) 7777
+---	---	---
+2.1	Backend	Admin Login Systeem: POST endpoint (username/password), controleert in database, registreert sessie, success/error message, GET endpoint (sessie geregistreerd? + admin naam)8888. Login logica in Service en Controller gescheiden9.
+2.2	Backend	CRUD API Controller voor Event (Admin): GET (public) voor event overzicht (incl. reviews en attendees)10101010. POST, PUT, DELETE (protected, admin login vereist)11. POST body bevat Title, description, date, start time, end time en location12. Mogelijkheid tot aanhechten van een review13.
+2.3	Backend	Login Service Uitbreiding: Ondersteuning voor meerdere rollen (admin/user)14141414. Normale gebruiker/Employee login en registratie (via login controller)15. Gebruiker kan alleen events bekijken/bijwonen; Admin kan events maken/bewerken/verwijderen16.
+2.4	Backend	Event Deelname Controller: POST endpoint (user id, event id in body) voor aanmelding, protected (ingelogde gebruiker)17. Controleert beschikbaarheid (datum/tijd)18. Retourneert event of error message19191919. GET endpoint voor lijst van attendees20. DELETE event uit kalender21.
+2.5	Backend	Kantoor Aanwezigheid Controller: Protected (login)22. Toegankelijk voor ingelogde gebruiker, kan alleen eigen attendance bewerken23. Retourneert error bij reeds bezette datum24.
+2.6	Backend	Kamer Boeken Controller: Protected (login)25. Toegankelijk voor ingelogde gebruiker, kan alleen beschikbare kamer boeken26. Retourneert error bij reeds bezette datum27.
+---	---	---
+3.1	Custom	Aangepaste Feature: Ten minste één aangepaste feature (goedkeuring door docent vereist) 28

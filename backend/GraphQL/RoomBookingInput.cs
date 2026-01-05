@@ -2,10 +2,10 @@ using System.ComponentModel.DataAnnotations;
 
 namespace INFWAD.Calendar.Backend.GraphQL;
 
-public class EventInput
+public class RoomBookingInput
 {
     [Required]
-    public string Title { get; set; } = string.Empty;
+    public int RoomId { get; set; }
 
     [Required]
     public DateOnly Date { get; set; }
@@ -16,9 +16,5 @@ public class EventInput
     [Required]
     public string EndTime { get; set; } = "23:59";
 
-    public string? Description { get; set; }
-
-    public List<int>? AttendeeIds { get; set; }
-
-    public int? RoomId { get; set; }
+    public string? Title { get; set; }
 }

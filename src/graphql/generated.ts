@@ -43,6 +43,8 @@ export type Event = {
   description: Maybe<Scalars['String']['output']>;
   endTime: Scalars['String']['output'];
   id: Scalars['Int']['output'];
+  room: Maybe<Room>;
+  roomId: Maybe<Scalars['Int']['output']>;
   startTime: Scalars['String']['output'];
   title: Scalars['String']['output'];
 };
@@ -60,6 +62,7 @@ export type EventInput = {
   date: Scalars['LocalDate']['input'];
   description: InputMaybe<Scalars['String']['input']>;
   endTime: Scalars['String']['input'];
+  roomId: InputMaybe<Scalars['Int']['input']>;
   startTime: Scalars['String']['input'];
   title: Scalars['String']['input'];
 };
@@ -87,13 +90,28 @@ export type LoginInput = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  bookRoom: RoomBooking;
+  cancelRoomBooking: Scalars['Boolean']['output'];
   createEvent: Event;
+  createRoom: Room;
   deleteEvent: Scalars['Boolean']['output'];
+  deleteRoom: Scalars['Boolean']['output'];
   joinEvent: Maybe<Event>;
   leaveEvent: Maybe<Event>;
   login: AuthPayload;
   register: AuthPayload;
   updateEvent: Maybe<Event>;
+  updateRoom: Maybe<Room>;
+};
+
+
+export type MutationBookRoomArgs = {
+  input: RoomBookingInput;
+};
+
+
+export type MutationCancelRoomBookingArgs = {
+  bookingId: Scalars['Int']['input'];
 };
 
 
@@ -102,7 +120,17 @@ export type MutationCreateEventArgs = {
 };
 
 
+export type MutationCreateRoomArgs = {
+  input: RoomInput;
+};
+
+
 export type MutationDeleteEventArgs = {
+  id: Scalars['Int']['input'];
+};
+
+
+export type MutationDeleteRoomArgs = {
   id: Scalars['Int']['input'];
 };
 
@@ -132,6 +160,12 @@ export type MutationUpdateEventArgs = {
   input: EventInput;
 };
 
+
+export type MutationUpdateRoomArgs = {
+  id: Scalars['Int']['input'];
+  input: RoomInput;
+};
+
 export type Query = {
   __typename?: 'Query';
   event: Maybe<Event>;
@@ -140,7 +174,11 @@ export type Query = {
   groups: Array<Group>;
   me: Maybe<User>;
   room: Maybe<Room>;
+  roomBookings: Array<RoomBooking>;
+  roomBookingsByRoom: Array<RoomBooking>;
+  roomWithBookings: Maybe<Room>;
   rooms: Array<Room>;
+  roomsWithBookings: Array<RoomWithBookings>;
   user: Maybe<User>;
   userOfficeAttendance: Maybe<UserOfficeAttendance>;
   userOfficeAttendances: Array<UserOfficeAttendance>;
@@ -163,6 +201,16 @@ export type QueryRoomArgs = {
 };
 
 
+export type QueryRoomBookingsByRoomArgs = {
+  roomId: Scalars['Int']['input'];
+};
+
+
+export type QueryRoomWithBookingsArgs = {
+  id: Scalars['Int']['input'];
+};
+
+
 export type QueryUserArgs = {
   id: Scalars['Int']['input'];
 };
@@ -180,6 +228,42 @@ export type RegisterInput = {
 
 export type Room = {
   __typename?: 'Room';
+  capacity: Maybe<Scalars['Int']['output']>;
+  id: Scalars['Int']['output'];
+  location: Maybe<Scalars['String']['output']>;
+  name: Scalars['String']['output'];
+};
+
+export type RoomBooking = {
+  __typename?: 'RoomBooking';
+  date: Scalars['LocalDate']['output'];
+  endTime: Scalars['String']['output'];
+  id: Scalars['Int']['output'];
+  room: Room;
+  roomId: Scalars['Int']['output'];
+  startTime: Scalars['String']['output'];
+  title: Maybe<Scalars['String']['output']>;
+  user: User;
+  userId: Scalars['Int']['output'];
+};
+
+export type RoomBookingInput = {
+  date: Scalars['LocalDate']['input'];
+  endTime: Scalars['String']['input'];
+  roomId: Scalars['Int']['input'];
+  startTime: Scalars['String']['input'];
+  title: InputMaybe<Scalars['String']['input']>;
+};
+
+export type RoomInput = {
+  capacity: InputMaybe<Scalars['Int']['input']>;
+  location: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+};
+
+export type RoomWithBookings = {
+  __typename?: 'RoomWithBookings';
+  bookings: Array<RoomBooking>;
   capacity: Maybe<Scalars['Int']['output']>;
   id: Scalars['Int']['output'];
   location: Maybe<Scalars['String']['output']>;
@@ -220,14 +304,14 @@ export type GetAttendeesQuery = { __typename?: 'Query', users: Array<{ __typenam
 export type GetEventsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetEventsQuery = { __typename?: 'Query', events: Array<{ __typename?: 'Event', id: number, title: string, date: any, startTime: string, endTime: string, description: string | null, attendees: Array<{ __typename?: 'User', id: number, name: string, color: string }> }> };
+export type GetEventsQuery = { __typename?: 'Query', events: Array<{ __typename?: 'Event', id: number, title: string, date: any, startTime: string, endTime: string, description: string | null, roomId: number | null, room: { __typename?: 'Room', id: number, name: string, capacity: number | null, location: string | null } | null, attendees: Array<{ __typename?: 'User', id: number, name: string, color: string }> }> };
 
 export type CreateEventMutationVariables = Exact<{
   input: EventInput;
 }>;
 
 
-export type CreateEventMutation = { __typename?: 'Mutation', createEvent: { __typename?: 'Event', id: number, title: string, date: any, startTime: string, endTime: string, description: string | null, attendees: Array<{ __typename?: 'User', id: number, name: string, color: string }> } };
+export type CreateEventMutation = { __typename?: 'Mutation', createEvent: { __typename?: 'Event', id: number, title: string, date: any, startTime: string, endTime: string, description: string | null, roomId: number | null, room: { __typename?: 'Room', id: number, name: string, capacity: number | null, location: string | null } | null, attendees: Array<{ __typename?: 'User', id: number, name: string, color: string }> } };
 
 export type UpdateEventMutationVariables = Exact<{
   id: Scalars['Int']['input'];
@@ -235,7 +319,7 @@ export type UpdateEventMutationVariables = Exact<{
 }>;
 
 
-export type UpdateEventMutation = { __typename?: 'Mutation', updateEvent: { __typename?: 'Event', id: number, title: string, date: any, startTime: string, endTime: string, description: string | null, attendees: Array<{ __typename?: 'User', id: number, name: string, color: string }> } | null };
+export type UpdateEventMutation = { __typename?: 'Mutation', updateEvent: { __typename?: 'Event', id: number, title: string, date: any, startTime: string, endTime: string, description: string | null, roomId: number | null, room: { __typename?: 'Room', id: number, name: string, capacity: number | null, location: string | null } | null, attendees: Array<{ __typename?: 'User', id: number, name: string, color: string }> } | null };
 
 export type DeleteEventMutationVariables = Exact<{
   id: Scalars['Int']['input'];
@@ -249,14 +333,67 @@ export type JoinEventMutationVariables = Exact<{
 }>;
 
 
-export type JoinEventMutation = { __typename?: 'Mutation', joinEvent: { __typename?: 'Event', id: number, title: string, date: any, startTime: string, endTime: string, description: string | null, attendees: Array<{ __typename?: 'User', id: number, name: string, color: string }> } | null };
+export type JoinEventMutation = { __typename?: 'Mutation', joinEvent: { __typename?: 'Event', id: number, title: string, date: any, startTime: string, endTime: string, description: string | null, roomId: number | null, room: { __typename?: 'Room', id: number, name: string, capacity: number | null, location: string | null } | null, attendees: Array<{ __typename?: 'User', id: number, name: string, color: string }> } | null };
 
 export type LeaveEventMutationVariables = Exact<{
   eventId: Scalars['Int']['input'];
 }>;
 
 
-export type LeaveEventMutation = { __typename?: 'Mutation', leaveEvent: { __typename?: 'Event', id: number, title: string, date: any, startTime: string, endTime: string, description: string | null, attendees: Array<{ __typename?: 'User', id: number, name: string, color: string }> } | null };
+export type LeaveEventMutation = { __typename?: 'Mutation', leaveEvent: { __typename?: 'Event', id: number, title: string, date: any, startTime: string, endTime: string, description: string | null, roomId: number | null, room: { __typename?: 'Room', id: number, name: string, capacity: number | null, location: string | null } | null, attendees: Array<{ __typename?: 'User', id: number, name: string, color: string }> } | null };
+
+export type GetRoomsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetRoomsQuery = { __typename?: 'Query', rooms: Array<{ __typename?: 'Room', id: number, name: string, capacity: number | null, location: string | null }> };
+
+export type GetRoomsWithBookingsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetRoomsWithBookingsQuery = { __typename?: 'Query', roomsWithBookings: Array<{ __typename?: 'RoomWithBookings', id: number, name: string, capacity: number | null, location: string | null, bookings: Array<{ __typename?: 'RoomBooking', id: number, roomId: number, userId: number, date: any, startTime: string, endTime: string, title: string | null, user: { __typename?: 'User', id: number, name: string } }> }> };
+
+export type GetRoomBookingsByRoomQueryVariables = Exact<{
+  roomId: Scalars['Int']['input'];
+}>;
+
+
+export type GetRoomBookingsByRoomQuery = { __typename?: 'Query', roomBookingsByRoom: Array<{ __typename?: 'RoomBooking', id: number, roomId: number, userId: number, date: any, startTime: string, endTime: string, title: string | null, room: { __typename?: 'Room', id: number, name: string }, user: { __typename?: 'User', id: number, name: string } }> };
+
+export type CreateRoomMutationVariables = Exact<{
+  input: RoomInput;
+}>;
+
+
+export type CreateRoomMutation = { __typename?: 'Mutation', createRoom: { __typename?: 'Room', id: number, name: string, capacity: number | null, location: string | null } };
+
+export type UpdateRoomMutationVariables = Exact<{
+  id: Scalars['Int']['input'];
+  input: RoomInput;
+}>;
+
+
+export type UpdateRoomMutation = { __typename?: 'Mutation', updateRoom: { __typename?: 'Room', id: number, name: string, capacity: number | null, location: string | null } | null };
+
+export type DeleteRoomMutationVariables = Exact<{
+  id: Scalars['Int']['input'];
+}>;
+
+
+export type DeleteRoomMutation = { __typename?: 'Mutation', deleteRoom: boolean };
+
+export type BookRoomMutationVariables = Exact<{
+  input: RoomBookingInput;
+}>;
+
+
+export type BookRoomMutation = { __typename?: 'Mutation', bookRoom: { __typename?: 'RoomBooking', id: number, roomId: number, userId: number, date: any, startTime: string, endTime: string, title: string | null, room: { __typename?: 'Room', id: number, name: string }, user: { __typename?: 'User', id: number, name: string } } };
+
+export type CancelRoomBookingMutationVariables = Exact<{
+  bookingId: Scalars['Int']['input'];
+}>;
+
+
+export type CancelRoomBookingMutation = { __typename?: 'Mutation', cancelRoomBooking: boolean };
 
 export type RegisterMutationVariables = Exact<{
   input: RegisterInput;
@@ -328,6 +465,13 @@ export const GetEventsDocument = gql`
     startTime
     endTime
     description
+    roomId
+    room {
+      id
+      name
+      capacity
+      location
+    }
     attendees {
       id
       name
@@ -377,6 +521,13 @@ export const CreateEventDocument = gql`
     startTime
     endTime
     description
+    roomId
+    room {
+      id
+      name
+      capacity
+      location
+    }
     attendees {
       id
       name
@@ -420,6 +571,13 @@ export const UpdateEventDocument = gql`
     startTime
     endTime
     description
+    roomId
+    room {
+      id
+      name
+      capacity
+      location
+    }
     attendees {
       id
       name
@@ -495,6 +653,13 @@ export const JoinEventDocument = gql`
     startTime
     endTime
     description
+    roomId
+    room {
+      id
+      name
+      capacity
+      location
+    }
     attendees {
       id
       name
@@ -538,6 +703,13 @@ export const LeaveEventDocument = gql`
     startTime
     endTime
     description
+    roomId
+    room {
+      id
+      name
+      capacity
+      location
+    }
     attendees {
       id
       name
@@ -572,6 +744,339 @@ export function useLeaveEventMutation(baseOptions?: Apollo.MutationHookOptions<L
 export type LeaveEventMutationHookResult = ReturnType<typeof useLeaveEventMutation>;
 export type LeaveEventMutationResult = Apollo.MutationResult<LeaveEventMutation>;
 export type LeaveEventMutationOptions = Apollo.BaseMutationOptions<LeaveEventMutation, LeaveEventMutationVariables>;
+export const GetRoomsDocument = gql`
+    query GetRooms {
+  rooms {
+    id
+    name
+    capacity
+    location
+  }
+}
+    `;
+
+/**
+ * __useGetRoomsQuery__
+ *
+ * To run a query within a React component, call `useGetRoomsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetRoomsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetRoomsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetRoomsQuery(baseOptions?: Apollo.QueryHookOptions<GetRoomsQuery, GetRoomsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetRoomsQuery, GetRoomsQueryVariables>(GetRoomsDocument, options);
+      }
+export function useGetRoomsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetRoomsQuery, GetRoomsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetRoomsQuery, GetRoomsQueryVariables>(GetRoomsDocument, options);
+        }
+export function useGetRoomsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetRoomsQuery, GetRoomsQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetRoomsQuery, GetRoomsQueryVariables>(GetRoomsDocument, options);
+        }
+export type GetRoomsQueryHookResult = ReturnType<typeof useGetRoomsQuery>;
+export type GetRoomsLazyQueryHookResult = ReturnType<typeof useGetRoomsLazyQuery>;
+export type GetRoomsSuspenseQueryHookResult = ReturnType<typeof useGetRoomsSuspenseQuery>;
+export type GetRoomsQueryResult = Apollo.QueryResult<GetRoomsQuery, GetRoomsQueryVariables>;
+export const GetRoomsWithBookingsDocument = gql`
+    query GetRoomsWithBookings {
+  roomsWithBookings {
+    id
+    name
+    capacity
+    location
+    bookings {
+      id
+      roomId
+      userId
+      date
+      startTime
+      endTime
+      title
+      user {
+        id
+        name
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetRoomsWithBookingsQuery__
+ *
+ * To run a query within a React component, call `useGetRoomsWithBookingsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetRoomsWithBookingsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetRoomsWithBookingsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetRoomsWithBookingsQuery(baseOptions?: Apollo.QueryHookOptions<GetRoomsWithBookingsQuery, GetRoomsWithBookingsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetRoomsWithBookingsQuery, GetRoomsWithBookingsQueryVariables>(GetRoomsWithBookingsDocument, options);
+      }
+export function useGetRoomsWithBookingsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetRoomsWithBookingsQuery, GetRoomsWithBookingsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetRoomsWithBookingsQuery, GetRoomsWithBookingsQueryVariables>(GetRoomsWithBookingsDocument, options);
+        }
+export function useGetRoomsWithBookingsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetRoomsWithBookingsQuery, GetRoomsWithBookingsQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetRoomsWithBookingsQuery, GetRoomsWithBookingsQueryVariables>(GetRoomsWithBookingsDocument, options);
+        }
+export type GetRoomsWithBookingsQueryHookResult = ReturnType<typeof useGetRoomsWithBookingsQuery>;
+export type GetRoomsWithBookingsLazyQueryHookResult = ReturnType<typeof useGetRoomsWithBookingsLazyQuery>;
+export type GetRoomsWithBookingsSuspenseQueryHookResult = ReturnType<typeof useGetRoomsWithBookingsSuspenseQuery>;
+export type GetRoomsWithBookingsQueryResult = Apollo.QueryResult<GetRoomsWithBookingsQuery, GetRoomsWithBookingsQueryVariables>;
+export const GetRoomBookingsByRoomDocument = gql`
+    query GetRoomBookingsByRoom($roomId: Int!) {
+  roomBookingsByRoom(roomId: $roomId) {
+    id
+    roomId
+    userId
+    date
+    startTime
+    endTime
+    title
+    room {
+      id
+      name
+    }
+    user {
+      id
+      name
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetRoomBookingsByRoomQuery__
+ *
+ * To run a query within a React component, call `useGetRoomBookingsByRoomQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetRoomBookingsByRoomQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetRoomBookingsByRoomQuery({
+ *   variables: {
+ *      roomId: // value for 'roomId'
+ *   },
+ * });
+ */
+export function useGetRoomBookingsByRoomQuery(baseOptions: Apollo.QueryHookOptions<GetRoomBookingsByRoomQuery, GetRoomBookingsByRoomQueryVariables> & ({ variables: GetRoomBookingsByRoomQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetRoomBookingsByRoomQuery, GetRoomBookingsByRoomQueryVariables>(GetRoomBookingsByRoomDocument, options);
+      }
+export function useGetRoomBookingsByRoomLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetRoomBookingsByRoomQuery, GetRoomBookingsByRoomQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetRoomBookingsByRoomQuery, GetRoomBookingsByRoomQueryVariables>(GetRoomBookingsByRoomDocument, options);
+        }
+export function useGetRoomBookingsByRoomSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetRoomBookingsByRoomQuery, GetRoomBookingsByRoomQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetRoomBookingsByRoomQuery, GetRoomBookingsByRoomQueryVariables>(GetRoomBookingsByRoomDocument, options);
+        }
+export type GetRoomBookingsByRoomQueryHookResult = ReturnType<typeof useGetRoomBookingsByRoomQuery>;
+export type GetRoomBookingsByRoomLazyQueryHookResult = ReturnType<typeof useGetRoomBookingsByRoomLazyQuery>;
+export type GetRoomBookingsByRoomSuspenseQueryHookResult = ReturnType<typeof useGetRoomBookingsByRoomSuspenseQuery>;
+export type GetRoomBookingsByRoomQueryResult = Apollo.QueryResult<GetRoomBookingsByRoomQuery, GetRoomBookingsByRoomQueryVariables>;
+export const CreateRoomDocument = gql`
+    mutation CreateRoom($input: RoomInput!) {
+  createRoom(input: $input) {
+    id
+    name
+    capacity
+    location
+  }
+}
+    `;
+export type CreateRoomMutationFn = Apollo.MutationFunction<CreateRoomMutation, CreateRoomMutationVariables>;
+
+/**
+ * __useCreateRoomMutation__
+ *
+ * To run a mutation, you first call `useCreateRoomMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateRoomMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createRoomMutation, { data, loading, error }] = useCreateRoomMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreateRoomMutation(baseOptions?: Apollo.MutationHookOptions<CreateRoomMutation, CreateRoomMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateRoomMutation, CreateRoomMutationVariables>(CreateRoomDocument, options);
+      }
+export type CreateRoomMutationHookResult = ReturnType<typeof useCreateRoomMutation>;
+export type CreateRoomMutationResult = Apollo.MutationResult<CreateRoomMutation>;
+export type CreateRoomMutationOptions = Apollo.BaseMutationOptions<CreateRoomMutation, CreateRoomMutationVariables>;
+export const UpdateRoomDocument = gql`
+    mutation UpdateRoom($id: Int!, $input: RoomInput!) {
+  updateRoom(id: $id, input: $input) {
+    id
+    name
+    capacity
+    location
+  }
+}
+    `;
+export type UpdateRoomMutationFn = Apollo.MutationFunction<UpdateRoomMutation, UpdateRoomMutationVariables>;
+
+/**
+ * __useUpdateRoomMutation__
+ *
+ * To run a mutation, you first call `useUpdateRoomMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateRoomMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateRoomMutation, { data, loading, error }] = useUpdateRoomMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useUpdateRoomMutation(baseOptions?: Apollo.MutationHookOptions<UpdateRoomMutation, UpdateRoomMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateRoomMutation, UpdateRoomMutationVariables>(UpdateRoomDocument, options);
+      }
+export type UpdateRoomMutationHookResult = ReturnType<typeof useUpdateRoomMutation>;
+export type UpdateRoomMutationResult = Apollo.MutationResult<UpdateRoomMutation>;
+export type UpdateRoomMutationOptions = Apollo.BaseMutationOptions<UpdateRoomMutation, UpdateRoomMutationVariables>;
+export const DeleteRoomDocument = gql`
+    mutation DeleteRoom($id: Int!) {
+  deleteRoom(id: $id)
+}
+    `;
+export type DeleteRoomMutationFn = Apollo.MutationFunction<DeleteRoomMutation, DeleteRoomMutationVariables>;
+
+/**
+ * __useDeleteRoomMutation__
+ *
+ * To run a mutation, you first call `useDeleteRoomMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteRoomMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteRoomMutation, { data, loading, error }] = useDeleteRoomMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useDeleteRoomMutation(baseOptions?: Apollo.MutationHookOptions<DeleteRoomMutation, DeleteRoomMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteRoomMutation, DeleteRoomMutationVariables>(DeleteRoomDocument, options);
+      }
+export type DeleteRoomMutationHookResult = ReturnType<typeof useDeleteRoomMutation>;
+export type DeleteRoomMutationResult = Apollo.MutationResult<DeleteRoomMutation>;
+export type DeleteRoomMutationOptions = Apollo.BaseMutationOptions<DeleteRoomMutation, DeleteRoomMutationVariables>;
+export const BookRoomDocument = gql`
+    mutation BookRoom($input: RoomBookingInput!) {
+  bookRoom(input: $input) {
+    id
+    roomId
+    userId
+    date
+    startTime
+    endTime
+    title
+    room {
+      id
+      name
+    }
+    user {
+      id
+      name
+    }
+  }
+}
+    `;
+export type BookRoomMutationFn = Apollo.MutationFunction<BookRoomMutation, BookRoomMutationVariables>;
+
+/**
+ * __useBookRoomMutation__
+ *
+ * To run a mutation, you first call `useBookRoomMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useBookRoomMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [bookRoomMutation, { data, loading, error }] = useBookRoomMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useBookRoomMutation(baseOptions?: Apollo.MutationHookOptions<BookRoomMutation, BookRoomMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<BookRoomMutation, BookRoomMutationVariables>(BookRoomDocument, options);
+      }
+export type BookRoomMutationHookResult = ReturnType<typeof useBookRoomMutation>;
+export type BookRoomMutationResult = Apollo.MutationResult<BookRoomMutation>;
+export type BookRoomMutationOptions = Apollo.BaseMutationOptions<BookRoomMutation, BookRoomMutationVariables>;
+export const CancelRoomBookingDocument = gql`
+    mutation CancelRoomBooking($bookingId: Int!) {
+  cancelRoomBooking(bookingId: $bookingId)
+}
+    `;
+export type CancelRoomBookingMutationFn = Apollo.MutationFunction<CancelRoomBookingMutation, CancelRoomBookingMutationVariables>;
+
+/**
+ * __useCancelRoomBookingMutation__
+ *
+ * To run a mutation, you first call `useCancelRoomBookingMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCancelRoomBookingMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [cancelRoomBookingMutation, { data, loading, error }] = useCancelRoomBookingMutation({
+ *   variables: {
+ *      bookingId: // value for 'bookingId'
+ *   },
+ * });
+ */
+export function useCancelRoomBookingMutation(baseOptions?: Apollo.MutationHookOptions<CancelRoomBookingMutation, CancelRoomBookingMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CancelRoomBookingMutation, CancelRoomBookingMutationVariables>(CancelRoomBookingDocument, options);
+      }
+export type CancelRoomBookingMutationHookResult = ReturnType<typeof useCancelRoomBookingMutation>;
+export type CancelRoomBookingMutationResult = Apollo.MutationResult<CancelRoomBookingMutation>;
+export type CancelRoomBookingMutationOptions = Apollo.BaseMutationOptions<CancelRoomBookingMutation, CancelRoomBookingMutationVariables>;
 export const RegisterDocument = gql`
     mutation Register($input: RegisterInput!) {
   register(input: $input) {

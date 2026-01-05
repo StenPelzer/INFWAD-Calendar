@@ -15,6 +15,7 @@ public class AppDbContext : DbContext
     public DbSet<Group> Groups => Set<Group>();
     public DbSet<GroupMembership> GroupMemberships => Set<GroupMembership>();
     public DbSet<Room> Rooms => Set<Room>();
+    public DbSet<RoomBooking> RoomBookings => Set<RoomBooking>();
     public DbSet<User> Users => Set<User>();
     public DbSet<UserOfficeAttendance> UserOfficeAttendances => Set<UserOfficeAttendance>();
 
@@ -27,6 +28,10 @@ public class AppDbContext : DbContext
         {
             eb.HasKey(e => e.Id);
             eb.Property(e => e.Title).IsRequired();
+            eb.HasOne(e => e.Room)
+              .WithMany(r => r.Events)
+              .HasForeignKey(e => e.RoomId)
+              .OnDelete(DeleteBehavior.SetNull);
         });
 
         // EventAttendee configuration (composite key)
@@ -69,6 +74,23 @@ public class AppDbContext : DbContext
         {
             eb.HasKey(r => r.Id);
             eb.Property(r => r.Name).IsRequired();
+        });
+
+        // RoomBooking configuration
+        modelBuilder.Entity<RoomBooking>(eb =>
+        {
+            eb.HasKey(rb => rb.Id);
+            eb.Property(rb => rb.Date).IsRequired();
+            eb.Property(rb => rb.StartTime).IsRequired();
+            eb.Property(rb => rb.EndTime).IsRequired();
+            eb.HasOne(rb => rb.Room)
+              .WithMany(r => r.Bookings)
+              .HasForeignKey(rb => rb.RoomId)
+              .OnDelete(DeleteBehavior.Cascade);
+            eb.HasOne(rb => rb.User)
+              .WithMany()
+              .HasForeignKey(rb => rb.UserId)
+              .OnDelete(DeleteBehavior.Cascade);
         });
 
         // User configuration

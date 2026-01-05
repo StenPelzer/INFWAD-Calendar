@@ -16,6 +16,13 @@ const GET_EVENTS_QUERY = gql`
       startTime
       endTime
       description
+      roomId
+      room {
+        id
+        name
+        capacity
+        location
+      }
       attendees {
         id
         name
@@ -35,6 +42,13 @@ const CREATE_EVENT_MUTATION = gql`
       startTime
       endTime
       description
+      roomId
+      room {
+        id
+        name
+        capacity
+        location
+      }
       attendees {
         id
         name
@@ -54,6 +68,13 @@ const UPDATE_EVENT_MUTATION = gql`
       startTime
       endTime
       description
+      roomId
+      room {
+        id
+        name
+        capacity
+        location
+      }
       attendees {
         id
         name
@@ -80,6 +101,13 @@ const JOIN_EVENT_MUTATION = gql`
       startTime
       endTime
       description
+      roomId
+      room {
+        id
+        name
+        capacity
+        location
+      }
       attendees {
         id
         name
@@ -99,6 +127,13 @@ const LEAVE_EVENT_MUTATION = gql`
       startTime
       endTime
       description
+      roomId
+      room {
+        id
+        name
+        capacity
+        location
+      }
       attendees {
         id
         name

@@ -3,6 +3,7 @@ import { useCreateEvent } from '../services/eventsGraphql.service'
 import type { User } from '@/graphql/generated'
 import '../assets/styles.scss'
 import AttendeeSelector from '@/features/calendar/components/AttendeeSelector'
+import RoomSelector from '@/features/calendar/components/RoomSelector'
 
 type EventInput = {
   title: string
@@ -11,6 +12,7 @@ type EventInput = {
   endTime: string
   description: string | null
   attendeeIds: Array<number>
+  roomId: number | null
 }
 
 type CreateEventProps = {
@@ -33,6 +35,7 @@ function CreateEvent({ selectedDate, setSelectedDate }: CreateEventProps) {
   const [eventTimeTo, setEventTimeTo] = React.useState(getCurrentTimeString())
   const [eventTitle, setEventTitle] = React.useState('')
   const [eventAttendees, setEventAttendees] = React.useState<Array<User>>([])
+  const [eventRoomId, setEventRoomId] = React.useState<number | null>(null)
   const [createEvent, { loading: creating }] = useCreateEvent()
 
   async function onSubmit(e: React.FormEvent) {
@@ -48,6 +51,7 @@ function CreateEvent({ selectedDate, setSelectedDate }: CreateEventProps) {
       endTime: eventTimeTo,
       description: eventText || null,
       attendeeIds: eventAttendees.map((a) => a.id),
+      roomId: eventRoomId,
     }
 
     try {
@@ -57,6 +61,7 @@ function CreateEvent({ selectedDate, setSelectedDate }: CreateEventProps) {
       setEventTimeFrom('')
       setEventTimeTo('')
       setEventAttendees([])
+      setEventRoomId(null)
     } catch (error) {
       console.error('Error creating event:', error)
       alert('Failed to create event. Please try again.')
@@ -151,6 +156,21 @@ function CreateEvent({ selectedDate, setSelectedDate }: CreateEventProps) {
           <AttendeeSelector
             selectedAttendees={eventAttendees}
             onChange={setEventAttendees}
+          />
+        </div>
+        <div>
+          <label
+            className="block text-sm font-medium mb-1"
+            htmlFor="event-room"
+          >
+            Room (optional)
+          </label>
+          <RoomSelector
+            selectedRoomId={eventRoomId}
+            onChange={setEventRoomId}
+            date={selectedDate.toLocaleDateString('en-CA')}
+            startTime={eventTimeFrom}
+            endTime={eventTimeTo}
           />
         </div>
         <div>

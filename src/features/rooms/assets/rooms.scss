@@ -1,0 +1,461 @@
+@use '../../../_variables.scss' as *;
+
+.rooms-container {
+  padding: 1.5rem;
+  width: 600px;
+  margin: 0 auto;
+}
+
+.rooms-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+
+  h1 {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.75rem;
+    color: $blue;
+    margin: 0;
+  }
+}
+
+.rooms-loading,
+.rooms-error {
+  padding: 2rem;
+  text-align: center;
+  color: $blue;
+}
+
+.rooms-error {
+  color: $orange;
+}
+
+.rooms-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.no-rooms {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 3rem;
+  color: #666;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+
+  svg {
+    opacity: 0.3;
+  }
+}
+
+.room-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.25rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: $transition;
+
+  &:hover {
+    border-color: $green;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  }
+
+  &.selected {
+    border-color: $green;
+    background: rgba($green, 0.05);
+  }
+}
+
+.room-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+
+  h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: $blue;
+  }
+}
+
+.room-actions {
+  display: flex;
+  gap: 0.5rem;
+
+  button {
+    padding: 0.4rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: $transition;
+  }
+}
+
+.btn-book {
+  background: rgba($green, 0.1);
+  color: $green;
+
+  &:hover {
+    background: $green;
+    color: white;
+  }
+}
+
+.btn-edit {
+  background: rgba($blue, 0.1);
+  color: $blue;
+
+  &:hover {
+    background: $blue;
+    color: white;
+  }
+}
+
+.btn-delete {
+  background: rgba($orange, 0.1);
+  color: $orange;
+
+  &:hover {
+    background: $orange;
+    color: white;
+  }
+}
+
+.room-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.875rem;
+  color: #666;
+
+  span {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+}
+
+.room-bookings-summary {
+  font-size: 0.8rem;
+  color: $green;
+  font-weight: 500;
+}
+
+// Room Details Panel
+.room-details {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  margin-top: 2rem;
+}
+
+.room-details-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #eee;
+
+  h2 {
+    margin: 0;
+    color: $blue;
+  }
+}
+
+.btn-close {
+  background: none;
+  border: none;
+  padding: 0.5rem;
+  cursor: pointer;
+  color: #666;
+  border-radius: 6px;
+  transition: $transition;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.05);
+  }
+}
+
+.room-details-meta {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+  color: #666;
+
+  span {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+}
+
+.bookings-list {
+  h3 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+    color: $blue;
+    margin-bottom: 1rem;
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+}
+
+.no-bookings {
+  color: #888;
+  font-style: italic;
+}
+
+.booking-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  border-radius: 8px;
+  background: rgba($beige, 0.5);
+  margin-bottom: 0.5rem;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.booking-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+
+  .booking-date {
+    font-weight: 600;
+    color: $blue;
+  }
+
+  .booking-time {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    color: #666;
+    font-size: 0.9rem;
+  }
+
+  .booking-title {
+    color: $blue;
+    font-weight: 500;
+  }
+
+  .booking-user {
+    font-size: 0.8rem;
+    color: #888;
+  }
+}
+
+.btn-cancel {
+  background: rgba($orange, 0.1);
+  color: $orange;
+  border: none;
+  padding: 0.4rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: $transition;
+
+  &:hover {
+    background: $orange;
+    color: white;
+  }
+}
+
+.btn-book-full {
+  width: 100%;
+  margin-top: 1.5rem;
+  justify-content: center;
+}
+
+// Buttons
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  background: $green;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: $transition;
+
+  &:hover:not(:disabled) {
+    background: $green-dark;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  background: #f0f0f0;
+  color: $blue;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: $transition;
+
+  &:hover {
+    background: #e0e0e0;
+  }
+}
+
+.modal-title {
+  margin: 0 0 1.5rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: $blue;
+}
+
+// Forms
+.room-form,
+.booking-form {
+  .form-group {
+    margin-bottom: 1rem;
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: $blue;
+    }
+
+    input {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: $transition;
+
+      &:focus {
+        outline: none;
+        border-color: $green;
+        box-shadow: 0 0 0 3px rgba($green, 0.1);
+      }
+    }
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid #eee;
+  }
+}
+
+.date-bookings {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: rgba($beige, 0.5);
+  border-radius: 8px;
+
+  h4 {
+    margin: 0 0 0.75rem;
+    font-size: 0.9rem;
+    color: $blue;
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .existing-booking {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.35rem 0;
+    font-size: 0.875rem;
+    color: #666;
+  }
+
+  .no-bookings-hint {
+    color: $green;
+    font-size: 0.875rem;
+    margin: 0;
+  }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .rooms-container {
+    padding: 1rem;
+  }
+
+  .rooms-header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+
+    h1 {
+      font-size: 1.5rem;
+    }
+
+    .btn-primary {
+      justify-content: center;
+    }
+  }
+
+  .rooms-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .room-details-meta {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .booking-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr !important;
+  }
+}

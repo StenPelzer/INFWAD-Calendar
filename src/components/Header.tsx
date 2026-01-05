@@ -1,7 +1,16 @@
 import { Link, useNavigate } from '@tanstack/react-router'
 
 import { useState } from 'react'
-import { Home, LogIn, LogOut, Menu, Shield, User, X } from 'lucide-react'
+import {
+  Building2,
+  Home,
+  LogIn,
+  LogOut,
+  Menu,
+  Shield,
+  User,
+  X,
+} from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import '../assets/Header.scss'
 
@@ -74,7 +83,7 @@ export default function Header() {
         {isAuthenticated && user && (
           <div className="sidebar-user-info">
             <div className="sidebar-avatar">
-              {user.role === 'Admin' ? (
+              {user.role === 'ADMIN' ? (
                 <Shield size={24} />
               ) : (
                 <User size={24} />
@@ -100,6 +109,21 @@ export default function Header() {
             <Home size={20} />
             <span className="font-medium">Home</span>
           </Link>
+
+          {isAuthenticated && (
+            <Link
+              to="/rooms"
+              onClick={() => setIsOpen(false)}
+              className="flex items-center gap-3 p-3 rounded-lg transition-colors mb-2"
+              activeProps={{
+                className:
+                  'flex items-center gap-3 p-3 rounded-lg transition-colors mb-2',
+              }}
+            >
+              <Building2 size={20} />
+              <span className="font-medium">Rooms</span>
+            </Link>
+          )}
 
           {!isAuthenticated && (
             <Link

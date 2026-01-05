@@ -1,14 +1,16 @@
 import React, { useState } from 'react'
+import { Building2 } from 'lucide-react'
 import {
   useDeleteEvent,
-  useUpdateEvent,
   useJoinEvent,
   useLeaveEvent,
+  useUpdateEvent,
 } from '../services/eventsGraphql.service'
 import type { EventFromQuery } from '../services/eventsGraphql.service'
 import type { User } from '@/graphql/generated'
 import '../assets/styles.scss'
 import AttendeeSelector from '@/features/calendar/components/AttendeeSelector'
+import RoomSelector from '@/features/calendar/components/RoomSelector'
 import { useAuth } from '@/context/AuthContext'
 
 type EventInput = {
@@ -18,6 +20,7 @@ type EventInput = {
   endTime: string
   description: string | null
   attendeeIds: Array<number>
+  roomId: number | null
 }
 
 type EventDetailsProps = {
@@ -42,6 +45,9 @@ function EventDetails({ event, onClose, isAdmin }: EventDetailsProps) {
   const [eventTimeTo, setEventTimeTo] = useState(event.endTime)
   const [eventAttendees, setEventAttendees] = useState<Array<User>>(
     event.attendees as Array<User>,
+  )
+  const [eventRoomId, setEventRoomId] = useState<number | null>(
+    (event as any).roomId || (event as any).room?.id || null,
   )
   const [updateEvent, { loading: updating }] = useUpdateEvent()
   const [deleteEvent, { loading: deleting }] = useDeleteEvent()
@@ -84,6 +90,7 @@ function EventDetails({ event, onClose, isAdmin }: EventDetailsProps) {
       endTime: eventTimeTo,
       description: eventDescription || null,
       attendeeIds: eventAttendees.map((a) => a.id),
+      roomId: eventRoomId,
     }
 
     try {
@@ -116,6 +123,7 @@ function EventDetails({ event, onClose, isAdmin }: EventDetailsProps) {
     setEventTimeFrom(event.startTime)
     setEventTimeTo(event.endTime)
     setEventAttendees(event.attendees as Array<User>)
+    setEventRoomId((event as any).roomId || (event as any).room?.id || null)
     setIsEditing(false)
   }
 
@@ -236,6 +244,22 @@ function EventDetails({ event, onClose, isAdmin }: EventDetailsProps) {
           <div>
             <label
               className="block text-sm font-medium mb-1"
+              htmlFor="event-room"
+            >
+              Room
+            </label>
+            <RoomSelector
+              selectedRoomId={eventRoomId}
+              onChange={setEventRoomId}
+              date={eventDate}
+              startTime={eventTimeFrom}
+              endTime={eventTimeTo}
+              excludeEventId={event.id}
+            />
+          </div>
+          <div>
+            <label
+              className="block text-sm font-medium mb-1"
               htmlFor="event-desc"
             >
               Description
@@ -346,6 +370,12 @@ function EventDetails({ event, onClose, isAdmin }: EventDetailsProps) {
                 </span>
               ))}
             </div>
+          </div>
+        )}
+        {(event as any).room && (
+          <div className="flex items-center gap-2 text-gray-600">
+            <Building2 className="w-5 h-5" />
+            <span>{(event as any).room.name}</span>
           </div>
         )}
         {event.description && (

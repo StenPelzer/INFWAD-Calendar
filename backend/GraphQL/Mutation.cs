@@ -89,6 +89,17 @@ public class Mutation
     {
         int eventId;
 
+        // Check room availability if a room is specified
+        if (input.RoomId.HasValue)
+        {
+            await using var checkDb = await dbFactory.CreateDbContextAsync();
+            var conflict = await CheckRoomAvailabilityForEvent(checkDb, input.RoomId.Value, input.Date, input.StartTime, input.EndTime, null);
+            if (conflict)
+            {
+                throw new GraphQLException("The selected room is not available at the requested time");
+            }
+        }
+
         // Create the event
         await using (var db = await dbFactory.CreateDbContextAsync())
         {
@@ -98,7 +109,8 @@ public class Mutation
                 Date = input.Date,
                 StartTime = input.StartTime,
                 EndTime = input.EndTime,
-                Description = input.Description
+                Description = input.Description,
+                RoomId = input.RoomId
             };
             db.Events.Add(newEvent);
             await db.SaveChangesAsync();
@@ -131,13 +143,14 @@ public class Mutation
             await db.SaveChangesAsync();
         }
 
-        // Return the complete event with attendees
+        // Return the complete event with attendees and room
         await using (var db = await dbFactory.CreateDbContextAsync())
         {
             return await db.Events
                 .AsNoTracking()
                 .Include(e => e.EventAttendees)
                     .ThenInclude(ea => ea.User)
+                .Include(e => e.Room)
                 .FirstAsync(e => e.Id == eventId);
         }
     }
@@ -145,6 +158,17 @@ public class Mutation
     [Authorize(Roles = new[] { "Admin" })]
     public async Task<Event?> UpdateEvent(int id, EventInput input, [Service] IDbContextFactory<AppDbContext> dbFactory)
     {
+        // Check room availability if a room is specified
+        if (input.RoomId.HasValue)
+        {
+            await using var checkDb = await dbFactory.CreateDbContextAsync();
+            var conflict = await CheckRoomAvailabilityForEvent(checkDb, input.RoomId.Value, input.Date, input.StartTime, input.EndTime, id);
+            if (conflict)
+            {
+                throw new GraphQLException("The selected room is not available at the requested time");
+            }
+        }
+
         // Update event properties
         await using (var db = await dbFactory.CreateDbContextAsync())
         {
@@ -156,6 +180,7 @@ public class Mutation
             existing.StartTime = input.StartTime;
             existing.EndTime = input.EndTime;
             existing.Description = input.Description;
+            existing.RoomId = input.RoomId;
             await db.SaveChangesAsync();
         }
 
@@ -213,13 +238,14 @@ public class Mutation
             await db.SaveChangesAsync();
         }
 
-        // Return the complete event with attendees
+        // Return the complete event with attendees and room
         await using (var db = await dbFactory.CreateDbContextAsync())
         {
             return await db.Events
                 .AsNoTracking()
                 .Include(e => e.EventAttendees)
                     .ThenInclude(ea => ea.User)
+                .Include(e => e.Room)
                 .FirstAsync(e => e.Id == id);
         }
     }
@@ -269,6 +295,7 @@ public class Mutation
                 .AsNoTracking()
                 .Include(e => e.EventAttendees)
                     .ThenInclude(ea => ea.User)
+                .Include(e => e.Room)
                 .FirstAsync(e => e.Id == eventId);
         }
 
@@ -289,6 +316,7 @@ public class Mutation
             .AsNoTracking()
             .Include(e => e.EventAttendees)
                 .ThenInclude(ea => ea.User)
+            .Include(e => e.Room)
             .FirstAsync(e => e.Id == eventId);
     }
 
@@ -319,6 +347,7 @@ public class Mutation
                 .AsNoTracking()
                 .Include(e => e.EventAttendees)
                     .ThenInclude(ea => ea.User)
+                .Include(e => e.Room)
                 .FirstOrDefaultAsync(e => e.Id == eventId);
             
             if (evt == null)
@@ -337,6 +366,225 @@ public class Mutation
             .AsNoTracking()
             .Include(e => e.EventAttendees)
                 .ThenInclude(ea => ea.User)
+            .Include(e => e.Room)
             .FirstAsync(e => e.Id == eventId);
+    }
+
+    // ==================== Room Mutations ====================
+
+    [Authorize(Roles = new[] { "Admin" })]
+    public async Task<Room> CreateRoom(RoomInput input, [Service] IDbContextFactory<AppDbContext> dbFactory)
+    {
+        await using var db = await dbFactory.CreateDbContextAsync();
+        
+        var room = new Room
+        {
+            Name = input.Name,
+            Capacity = input.Capacity,
+            Location = input.Location
+        };
+
+        db.Rooms.Add(room);
+        await db.SaveChangesAsync();
+        
+        return room;
+    }
+
+    [Authorize(Roles = new[] { "Admin" })]
+    public async Task<Room?> UpdateRoom(int id, RoomInput input, [Service] IDbContextFactory<AppDbContext> dbFactory)
+    {
+        await using var db = await dbFactory.CreateDbContextAsync();
+        
+        var room = await db.Rooms.FindAsync(id);
+        if (room == null) return null;
+
+        room.Name = input.Name;
+        room.Capacity = input.Capacity;
+        room.Location = input.Location;
+
+        await db.SaveChangesAsync();
+        return room;
+    }
+
+    [Authorize(Roles = new[] { "Admin" })]
+    public async Task<bool> DeleteRoom(int id, [Service] IDbContextFactory<AppDbContext> dbFactory)
+    {
+        await using var db = await dbFactory.CreateDbContextAsync();
+        
+        var room = await db.Rooms.FindAsync(id);
+        if (room == null) return false;
+
+        db.Rooms.Remove(room);
+        await db.SaveChangesAsync();
+        return true;
+    }
+
+    // ==================== Room Booking Mutations ====================
+
+    [Authorize]
+    public async Task<RoomBooking> BookRoom(
+        RoomBookingInput input,
+        ClaimsPrincipal claimsPrincipal,
+        [Service] IDbContextFactory<AppDbContext> dbFactory)
+    {
+        var userIdClaim = claimsPrincipal.FindFirst(ClaimTypes.NameIdentifier)?.Value
+            ?? claimsPrincipal.FindFirst("sub")?.Value;
+        if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
+        {
+            throw new GraphQLException("Unable to identify user from token");
+        }
+
+        await using var db = await dbFactory.CreateDbContextAsync();
+
+        // Check if room exists
+        var room = await db.Rooms.FindAsync(input.RoomId);
+        if (room == null)
+        {
+            throw new GraphQLException("Room not found");
+        }
+
+        // Check for conflicting bookings
+        var conflict = await CheckRoomAvailability(db, input.RoomId, input.Date, input.StartTime, input.EndTime, null);
+        if (conflict)
+        {
+            throw new GraphQLException("Room is not available at the requested time");
+        }
+
+        var booking = new RoomBooking
+        {
+            RoomId = input.RoomId,
+            UserId = userId,
+            Date = input.Date,
+            StartTime = input.StartTime,
+            EndTime = input.EndTime,
+            Title = input.Title
+        };
+
+        db.RoomBookings.Add(booking);
+        await db.SaveChangesAsync();
+
+        // Return with includes
+        await using var readDb = await dbFactory.CreateDbContextAsync();
+        return await readDb.RoomBookings
+            .AsNoTracking()
+            .Include(rb => rb.Room)
+            .Include(rb => rb.User)
+            .FirstAsync(rb => rb.Id == booking.Id);
+    }
+
+    [Authorize]
+    public async Task<bool> CancelRoomBooking(
+        int bookingId,
+        ClaimsPrincipal claimsPrincipal,
+        [Service] IDbContextFactory<AppDbContext> dbFactory)
+    {
+        var userIdClaim = claimsPrincipal.FindFirst(ClaimTypes.NameIdentifier)?.Value
+            ?? claimsPrincipal.FindFirst("sub")?.Value;
+        if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
+        {
+            throw new GraphQLException("Unable to identify user from token");
+        }
+
+        // Check if user is admin
+        var isAdmin = claimsPrincipal.IsInRole("Admin");
+
+        await using var db = await dbFactory.CreateDbContextAsync();
+        
+        var booking = await db.RoomBookings.FindAsync(bookingId);
+        if (booking == null)
+        {
+            throw new GraphQLException("Booking not found");
+        }
+
+        // Only the booking owner or admin can cancel
+        if (booking.UserId != userId && !isAdmin)
+        {
+            throw new GraphQLException("You can only cancel your own bookings");
+        }
+
+        db.RoomBookings.Remove(booking);
+        await db.SaveChangesAsync();
+        return true;
+    }
+
+    // Helper method to check room availability
+    private static async Task<bool> CheckRoomAvailability(
+        AppDbContext db,
+        int roomId,
+        DateOnly date,
+        string startTime,
+        string endTime,
+        int? excludeBookingId)
+    {
+        var bookings = await db.RoomBookings
+            .Where(rb => rb.RoomId == roomId && rb.Date == date)
+            .ToListAsync();
+
+        foreach (var booking in bookings)
+        {
+            if (excludeBookingId.HasValue && booking.Id == excludeBookingId.Value)
+                continue;
+
+            // Check for time overlap
+            if (TimesOverlap(startTime, endTime, booking.StartTime, booking.EndTime))
+            {
+                return true; // Conflict exists
+            }
+        }
+
+        return false; // No conflict
+    }
+
+    private static bool TimesOverlap(string start1, string end1, string start2, string end2)
+    {
+        // Parse times as TimeSpan for comparison
+        var s1 = TimeSpan.Parse(start1);
+        var e1 = TimeSpan.Parse(end1);
+        var s2 = TimeSpan.Parse(start2);
+        var e2 = TimeSpan.Parse(end2);
+
+        // Overlap occurs if one starts before the other ends
+        return s1 < e2 && s2 < e1;
+    }
+
+    // Helper method to check room availability for events (checks both bookings and other events)
+    private static async Task<bool> CheckRoomAvailabilityForEvent(
+        AppDbContext db,
+        int roomId,
+        DateOnly date,
+        string startTime,
+        string endTime,
+        int? excludeEventId)
+    {
+        // Check room bookings
+        var bookings = await db.RoomBookings
+            .Where(rb => rb.RoomId == roomId && rb.Date == date)
+            .ToListAsync();
+
+        foreach (var booking in bookings)
+        {
+            if (TimesOverlap(startTime, endTime, booking.StartTime, booking.EndTime))
+            {
+                return true; // Conflict with booking
+            }
+        }
+
+        // Check other events using this room
+        var events = await db.Events
+            .Where(e => e.RoomId == roomId && e.Date == date)
+            .ToListAsync();
+
+        foreach (var evt in events)
+        {
+            if (excludeEventId.HasValue && evt.Id == excludeEventId.Value)
+                continue;
+
+            if (TimesOverlap(startTime, endTime, evt.StartTime, evt.EndTime))
+            {
+                return true; // Conflict with another event
+            }
+        }
+
+        return false; // No conflict
     }
 }

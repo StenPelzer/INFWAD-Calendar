@@ -15,4 +15,3 @@ export const Route = createFileRoute('/auth')({
 function AuthPage() {
   return <AuthForm />
 }
-

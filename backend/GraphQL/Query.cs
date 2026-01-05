@@ -35,6 +35,7 @@ public class Query
             .AsNoTracking()
             .Include(e => e.EventAttendees)
                 .ThenInclude(ea => ea.User)
+            .Include(e => e.Room)
             .ToListAsync();
     }
 
@@ -46,6 +47,7 @@ public class Query
             .AsNoTracking()
             .Include(e => e.EventAttendees)
                 .ThenInclude(ea => ea.User)
+            .Include(e => e.Room)
             .FirstOrDefaultAsync(e => e.Id == id);
     }
 
@@ -74,7 +76,58 @@ public class Query
     public async Task<Room?> GetRoom(int id, [Service] IDbContextFactory<AppDbContext> dbFactory)
     {
         await using var db = await dbFactory.CreateDbContextAsync();
-        return await db.Rooms.FindAsync(id);
+        return await db.Rooms.AsNoTracking().FirstOrDefaultAsync(r => r.Id == id);
+    }
+
+    [GraphQLName("roomBookings")]
+    public async Task<IEnumerable<RoomBooking>> GetRoomBookings([Service] IDbContextFactory<AppDbContext> dbFactory)
+    {
+        await using var db = await dbFactory.CreateDbContextAsync();
+        return await db.RoomBookings
+            .AsNoTracking()
+            .Include(rb => rb.Room)
+            .Include(rb => rb.User)
+            .ToListAsync();
+    }
+
+    [GraphQLName("roomBookingsByRoom")]
+    public async Task<IEnumerable<RoomBooking>> GetRoomBookingsByRoom(int roomId, [Service] IDbContextFactory<AppDbContext> dbFactory)
+    {
+        await using var db = await dbFactory.CreateDbContextAsync();
+        return await db.RoomBookings
+            .AsNoTracking()
+            .Where(rb => rb.RoomId == roomId)
+            .Include(rb => rb.Room)
+            .Include(rb => rb.User)
+            .ToListAsync();
+    }
+
+    [GraphQLName("roomWithBookings")]
+    public async Task<Room?> GetRoomWithBookings(int id, [Service] IDbContextFactory<AppDbContext> dbFactory)
+    {
+        await using var db = await dbFactory.CreateDbContextAsync();
+        var room = await db.Rooms.AsNoTracking().FirstOrDefaultAsync(r => r.Id == id);
+        return room;
+    }
+
+    [GraphQLName("roomsWithBookings")]
+    public async Task<IEnumerable<RoomWithBookings>> GetRoomsWithBookings([Service] IDbContextFactory<AppDbContext> dbFactory)
+    {
+        await using var db = await dbFactory.CreateDbContextAsync();
+        var rooms = await db.Rooms.AsNoTracking().ToListAsync();
+        var bookings = await db.RoomBookings
+            .AsNoTracking()
+            .Include(rb => rb.User)
+            .ToListAsync();
+
+        return rooms.Select(r => new RoomWithBookings
+        {
+            Id = r.Id,
+            Name = r.Name,
+            Capacity = r.Capacity,
+            Location = r.Location,
+            Bookings = bookings.Where(b => b.RoomId == r.Id).ToList()
+        });
     }
 
     [GraphQLName("users")]

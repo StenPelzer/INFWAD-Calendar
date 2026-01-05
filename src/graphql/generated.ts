@@ -89,6 +89,8 @@ export type Mutation = {
   __typename?: 'Mutation';
   createEvent: Event;
   deleteEvent: Scalars['Boolean']['output'];
+  joinEvent: Maybe<Event>;
+  leaveEvent: Maybe<Event>;
   login: AuthPayload;
   register: AuthPayload;
   updateEvent: Maybe<Event>;
@@ -102,6 +104,16 @@ export type MutationCreateEventArgs = {
 
 export type MutationDeleteEventArgs = {
   id: Scalars['Int']['input'];
+};
+
+
+export type MutationJoinEventArgs = {
+  eventId: Scalars['Int']['input'];
+};
+
+
+export type MutationLeaveEventArgs = {
+  eventId: Scalars['Int']['input'];
 };
 
 
@@ -231,6 +243,20 @@ export type DeleteEventMutationVariables = Exact<{
 
 
 export type DeleteEventMutation = { __typename?: 'Mutation', deleteEvent: boolean };
+
+export type JoinEventMutationVariables = Exact<{
+  eventId: Scalars['Int']['input'];
+}>;
+
+
+export type JoinEventMutation = { __typename?: 'Mutation', joinEvent: { __typename?: 'Event', id: number, title: string, date: any, startTime: string, endTime: string, description: string | null, attendees: Array<{ __typename?: 'User', id: number, name: string, color: string }> } | null };
+
+export type LeaveEventMutationVariables = Exact<{
+  eventId: Scalars['Int']['input'];
+}>;
+
+
+export type LeaveEventMutation = { __typename?: 'Mutation', leaveEvent: { __typename?: 'Event', id: number, title: string, date: any, startTime: string, endTime: string, description: string | null, attendees: Array<{ __typename?: 'User', id: number, name: string, color: string }> } | null };
 
 export type RegisterMutationVariables = Exact<{
   input: RegisterInput;
@@ -460,6 +486,92 @@ export function useDeleteEventMutation(baseOptions?: Apollo.MutationHookOptions<
 export type DeleteEventMutationHookResult = ReturnType<typeof useDeleteEventMutation>;
 export type DeleteEventMutationResult = Apollo.MutationResult<DeleteEventMutation>;
 export type DeleteEventMutationOptions = Apollo.BaseMutationOptions<DeleteEventMutation, DeleteEventMutationVariables>;
+export const JoinEventDocument = gql`
+    mutation JoinEvent($eventId: Int!) {
+  joinEvent(eventId: $eventId) {
+    id
+    title
+    date
+    startTime
+    endTime
+    description
+    attendees {
+      id
+      name
+      color
+    }
+  }
+}
+    `;
+export type JoinEventMutationFn = Apollo.MutationFunction<JoinEventMutation, JoinEventMutationVariables>;
+
+/**
+ * __useJoinEventMutation__
+ *
+ * To run a mutation, you first call `useJoinEventMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useJoinEventMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [joinEventMutation, { data, loading, error }] = useJoinEventMutation({
+ *   variables: {
+ *      eventId: // value for 'eventId'
+ *   },
+ * });
+ */
+export function useJoinEventMutation(baseOptions?: Apollo.MutationHookOptions<JoinEventMutation, JoinEventMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<JoinEventMutation, JoinEventMutationVariables>(JoinEventDocument, options);
+      }
+export type JoinEventMutationHookResult = ReturnType<typeof useJoinEventMutation>;
+export type JoinEventMutationResult = Apollo.MutationResult<JoinEventMutation>;
+export type JoinEventMutationOptions = Apollo.BaseMutationOptions<JoinEventMutation, JoinEventMutationVariables>;
+export const LeaveEventDocument = gql`
+    mutation LeaveEvent($eventId: Int!) {
+  leaveEvent(eventId: $eventId) {
+    id
+    title
+    date
+    startTime
+    endTime
+    description
+    attendees {
+      id
+      name
+      color
+    }
+  }
+}
+    `;
+export type LeaveEventMutationFn = Apollo.MutationFunction<LeaveEventMutation, LeaveEventMutationVariables>;
+
+/**
+ * __useLeaveEventMutation__
+ *
+ * To run a mutation, you first call `useLeaveEventMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useLeaveEventMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [leaveEventMutation, { data, loading, error }] = useLeaveEventMutation({
+ *   variables: {
+ *      eventId: // value for 'eventId'
+ *   },
+ * });
+ */
+export function useLeaveEventMutation(baseOptions?: Apollo.MutationHookOptions<LeaveEventMutation, LeaveEventMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<LeaveEventMutation, LeaveEventMutationVariables>(LeaveEventDocument, options);
+      }
+export type LeaveEventMutationHookResult = ReturnType<typeof useLeaveEventMutation>;
+export type LeaveEventMutationResult = Apollo.MutationResult<LeaveEventMutation>;
+export type LeaveEventMutationOptions = Apollo.BaseMutationOptions<LeaveEventMutation, LeaveEventMutationVariables>;
 export const RegisterDocument = gql`
     mutation Register($input: RegisterInput!) {
   register(input: $input) {

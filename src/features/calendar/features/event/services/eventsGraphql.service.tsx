@@ -70,6 +70,44 @@ const DELETE_EVENT_MUTATION = gql`
   }
 `
 
+// Mutation for joining an event (self-registration)
+const JOIN_EVENT_MUTATION = gql`
+  mutation JoinEvent($eventId: Int!) {
+    joinEvent(eventId: $eventId) {
+      id
+      title
+      date
+      startTime
+      endTime
+      description
+      attendees {
+        id
+        name
+        color
+      }
+    }
+  }
+`
+
+// Mutation for leaving an event (self-unregistration)
+const LEAVE_EVENT_MUTATION = gql`
+  mutation LeaveEvent($eventId: Int!) {
+    leaveEvent(eventId: $eventId) {
+      id
+      title
+      date
+      startTime
+      endTime
+      description
+      attendees {
+        id
+        name
+        color
+      }
+    }
+  }
+`
+
 /**
  * Custom hook to fetch events using GraphQL
  * Returns loading, error, and data states
@@ -163,6 +201,36 @@ export function useUpdateEvent() {
  */
 export function useDeleteEvent() {
   return useMutation(DELETE_EVENT_MUTATION, {
+    refetchQueries: [{ query: GET_EVENTS_QUERY }],
+  })
+}
+
+/**
+ * Hook for a user to join an event (add themselves as an attendee)
+ *
+ * @example
+ * ```tsx
+ * const [joinEvent, { loading, error }] = useJoinEvent()
+ * await joinEvent({ variables: { eventId: 1 } })
+ * ```
+ */
+export function useJoinEvent() {
+  return useMutation(JOIN_EVENT_MUTATION, {
+    refetchQueries: [{ query: GET_EVENTS_QUERY }],
+  })
+}
+
+/**
+ * Hook for a user to leave an event (remove themselves as an attendee)
+ *
+ * @example
+ * ```tsx
+ * const [leaveEvent, { loading, error }] = useLeaveEvent()
+ * await leaveEvent({ variables: { eventId: 1 } })
+ * ```
+ */
+export function useLeaveEvent() {
+  return useMutation(LEAVE_EVENT_MUTATION, {
     refetchQueries: [{ query: GET_EVENTS_QUERY }],
   })
 }
@@ -284,6 +352,8 @@ export default {
   useCreateEvent,
   useUpdateEvent,
   useDeleteEvent,
+  useJoinEvent,
+  useLeaveEvent,
   getEventsForMonth,
   getEventsForDay,
   getEventsForWeek,

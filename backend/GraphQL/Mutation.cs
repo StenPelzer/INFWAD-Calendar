@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using HotChocolate.Authorization;
 using INFWAD.Calendar.Backend.Data;
 using INFWAD.Calendar.Backend.Models;
@@ -232,5 +233,110 @@ public class Mutation
         db.Events.Remove(existing);
         await db.SaveChangesAsync();
         return true;
+    }
+
+    [Authorize]
+    public async Task<Event?> JoinEvent(
+        int eventId,
+        ClaimsPrincipal claimsPrincipal,
+        [Service] IDbContextFactory<AppDbContext> dbFactory)
+    {
+        // Get user ID from JWT claims (ASP.NET Core maps "sub" to NameIdentifier)
+        var userIdClaim = claimsPrincipal.FindFirst(ClaimTypes.NameIdentifier)?.Value
+            ?? claimsPrincipal.FindFirst("sub")?.Value;
+        if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
+        {
+            throw new GraphQLException("Unable to identify user from token");
+        }
+
+        await using var db = await dbFactory.CreateDbContextAsync();
+
+        // Verify event exists
+        var eventExists = await db.Events.AnyAsync(e => e.Id == eventId);
+        if (!eventExists)
+        {
+            throw new GraphQLException("Event not found");
+        }
+
+        // Check if already attending
+        var alreadyAttending = await db.EventAttendees
+            .AnyAsync(ea => ea.EventId == eventId && ea.UserId == userId);
+        
+        if (alreadyAttending)
+        {
+            // Already attending, just return the event
+            return await db.Events
+                .AsNoTracking()
+                .Include(e => e.EventAttendees)
+                    .ThenInclude(ea => ea.User)
+                .FirstAsync(e => e.Id == eventId);
+        }
+
+        // Disable auto-detect changes to prevent NavigationFixer issues
+        db.ChangeTracker.AutoDetectChangesEnabled = false;
+
+        db.EventAttendees.Add(new EventAttendee
+        {
+            EventId = eventId,
+            UserId = userId
+        });
+
+        await db.SaveChangesAsync();
+
+        // Return the updated event
+        await using var readDb = await dbFactory.CreateDbContextAsync();
+        return await readDb.Events
+            .AsNoTracking()
+            .Include(e => e.EventAttendees)
+                .ThenInclude(ea => ea.User)
+            .FirstAsync(e => e.Id == eventId);
+    }
+
+    [Authorize]
+    public async Task<Event?> LeaveEvent(
+        int eventId,
+        ClaimsPrincipal claimsPrincipal,
+        [Service] IDbContextFactory<AppDbContext> dbFactory)
+    {
+        // Get user ID from JWT claims (ASP.NET Core maps "sub" to NameIdentifier)
+        var userIdClaim = claimsPrincipal.FindFirst(ClaimTypes.NameIdentifier)?.Value
+            ?? claimsPrincipal.FindFirst("sub")?.Value;
+        if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
+        {
+            throw new GraphQLException("Unable to identify user from token");
+        }
+
+        await using var db = await dbFactory.CreateDbContextAsync();
+
+        // Find the attendance record
+        var attendance = await db.EventAttendees
+            .FirstOrDefaultAsync(ea => ea.EventId == eventId && ea.UserId == userId);
+        
+        if (attendance == null)
+        {
+            // Not attending, just return the event
+            var evt = await db.Events
+                .AsNoTracking()
+                .Include(e => e.EventAttendees)
+                    .ThenInclude(ea => ea.User)
+                .FirstOrDefaultAsync(e => e.Id == eventId);
+            
+            if (evt == null)
+            {
+                throw new GraphQLException("Event not found");
+            }
+            return evt;
+        }
+
+        db.EventAttendees.Remove(attendance);
+        await db.SaveChangesAsync();
+
+        // Return the updated event
+        await using var readDb = await dbFactory.CreateDbContextAsync();
+        return await readDb.Events
+            .AsNoTracking()
+            .Include(e => e.EventAttendees)
+                .ThenInclude(ea => ea.User)
+            .FirstAsync(e => e.Id == eventId);
     }
 }

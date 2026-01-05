@@ -1,0 +1,29 @@
+.list-view {
+  padding: 0.5rem;
+
+  .list-day-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+  }
+
+  .events-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    li {
+      border-color: #e5e7eb;
+    }
+
+    .event-time {
+      color: #6b7280;
+      font-size: 0.875rem;
+    }
+
+    .event-title {
+      font-weight: 500;
+    }
+  }
+}

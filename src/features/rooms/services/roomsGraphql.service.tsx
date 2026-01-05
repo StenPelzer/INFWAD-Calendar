@@ -190,13 +190,19 @@ export function useDeleteRoom() {
 
 export function useBookRoom() {
   return useMutation(BOOK_ROOM_MUTATION, {
-    refetchQueries: [{ query: GET_ROOMS_WITH_BOOKINGS_QUERY }],
+    refetchQueries: [
+      { query: GET_ROOMS_QUERY },
+      { query: GET_ROOMS_WITH_BOOKINGS_QUERY },
+    ],
   })
 }
 
 export function useCancelRoomBooking() {
   return useMutation(CANCEL_ROOM_BOOKING_MUTATION, {
-    refetchQueries: [{ query: GET_ROOMS_WITH_BOOKINGS_QUERY }],
+    refetchQueries: [
+      { query: GET_ROOMS_QUERY },
+      { query: GET_ROOMS_WITH_BOOKINGS_QUERY },
+    ],
   })
 }
 

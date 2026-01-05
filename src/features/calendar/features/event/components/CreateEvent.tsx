@@ -163,7 +163,7 @@ function CreateEvent({ selectedDate, setSelectedDate }: CreateEventProps) {
             className="block text-sm font-medium mb-1"
             htmlFor="event-room"
           >
-            Room (optional)
+            Room
           </label>
           <RoomSelector
             selectedRoomId={eventRoomId}

@@ -246,7 +246,7 @@ function EventDetails({ event, onClose, isAdmin }: EventDetailsProps) {
               className="block text-sm font-medium mb-1"
               htmlFor="event-room"
             >
-              Room (optional)
+              Room
             </label>
             <RoomSelector
               selectedRoomId={eventRoomId}

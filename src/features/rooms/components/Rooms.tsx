@@ -197,6 +197,7 @@ export default function Rooms() {
         },
       })
       closeBookingModal()
+      setSelectedRoom(null)
     } catch (err) {
       console.error('Error booking room:', err)
       alert(
@@ -463,7 +464,7 @@ export default function Rooms() {
             <h3 className="modal-title">Book {bookingRoom.name}</h3>
             <form className="booking-form" onSubmit={handleBookingSubmit}>
               <div className="form-group">
-                <label htmlFor="booking-title">Booking Title (optional)</label>
+                <label htmlFor="booking-title">Booking Title</label>
                 <input
                   id="booking-title"
                   type="text"

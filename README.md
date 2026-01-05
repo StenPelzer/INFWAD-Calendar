@@ -2,6 +2,24 @@
 
 Project voor Hogeschool Rotterdam cursus INFWAD / WebAppDevelopment.
 
+## Initial setup
+
+Voor het assessment, en überhaupt om het project goed te draaien, heb ik hier een kort stappenplan voor de initiële setup.
+
+- Clone de repo
+- Navigeer via de terminal naar de root folder (of open in IDE)
+- Ga naar de backend folder `cd backend`
+- Run `docker-compose up --build -d`
+- Run `docker-compose up`
+- In een tweede CLI, ga naar de root folder
+- Run `dotnet ef database update -p backend -s backend`
+- Run `npm run seed`
+- Run `npm run dev`
+- Ga naar http://localhost:3000/
+- Gebruik een van de standaard accounts:
+  - User: admin@infwad.nl, pass: admin123
+  - User: basic@infwad.nl, pass: basic123
+
 ## Folder structure
 
 Ik maak gebruik van de bulletproof-react mappenstructuur, zoals [hier](https://github.com/alan2207/bulletproof-react/blob/master/docs/project-structure.md) beschreven. Dit helpt om het project duidelijk gestructureerd te houden, op een herkenbare en makkelijk te begrijpen manier.

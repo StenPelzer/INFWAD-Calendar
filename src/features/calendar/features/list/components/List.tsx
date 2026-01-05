@@ -90,17 +90,16 @@ export default function ListView({
     return linearGradient
   }
 
-  // For non-admin users, show only upcoming events
-  // For admin users, show all events for the current month
+  // Only relevant events for the current view
   const events = useMemo(() => {
     if (!data?.events) return []
 
     if (!isAdmin) {
-      // Non-admin: show upcoming events only
+      // Non-admin: show all upcoming events
       return getUpcomingEvents(data.events, selectedAttendees)
     }
 
-    // Admin: show events for the current month (existing behavior)
+    // Admin: show events for the current month
     let filtered = data.events.filter((e) => {
       const eventDate = parseEventDate(e.date)
       return (

@@ -5,7 +5,7 @@ services:
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: example
-      MYSQL_DATABASE: infwad_calendar_seeded
+      MYSQL_DATABASE: infwad_calendar
     ports:
       - "3306:3306"
     volumes:
@@ -17,7 +17,7 @@ services:
       - db
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - MYSQL_CONNECTION=server=db;port=3306;database=infwad_calendar_seeded;user=root;password=example
+      - MYSQL_CONNECTION=server=db;port=3306;database=infwad_calendar;user=root;password=example
     ports:
       - "5001:5000"
 

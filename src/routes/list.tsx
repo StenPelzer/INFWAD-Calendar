@@ -10,4 +10,3 @@ export const Route = createFileRoute('/list')({
   },
   component: () => <Calendar view="list" />,
 })
-

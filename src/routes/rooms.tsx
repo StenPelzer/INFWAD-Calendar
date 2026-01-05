@@ -10,4 +10,3 @@ export const Route = createFileRoute('/rooms')({
   },
   component: () => <Rooms />,
 })
-

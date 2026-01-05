@@ -13,7 +13,17 @@ import {
   type RoomBooking,
 } from '../services/roomsGraphql.service'
 import Modal from '@/components/Modal'
-import { Building2, Calendar, Clock, MapPin, Plus, Trash2, Edit2, Users, X } from 'lucide-react'
+import {
+  Building2,
+  Calendar,
+  Clock,
+  MapPin,
+  Plus,
+  Trash2,
+  Edit2,
+  Users,
+  X,
+} from 'lucide-react'
 import '../assets/rooms.scss'
 
 function getCurrentDateString() {
@@ -41,7 +51,7 @@ function formatDate(dateStr: string): string {
 export default function Rooms() {
   const { user } = useAuth()
   const isAdmin = user?.role === 'ADMIN'
-  
+
   const { data, loading, error } = useGetRoomsWithBookings()
   const [createRoom, { loading: creating }] = useCreateRoom()
   const [updateRoom, { loading: updating }] = useUpdateRoom()
@@ -59,17 +69,24 @@ export default function Rooms() {
   const [roomName, setRoomName] = useState('')
   const [roomCapacity, setRoomCapacity] = useState('')
   const [roomLocation, setRoomLocation] = useState('')
-  
+
   const [bookingDate, setBookingDate] = useState(getCurrentDateString())
-  const [bookingStartTime, setBookingStartTime] = useState(getCurrentTimeString())
+  const [bookingStartTime, setBookingStartTime] = useState(
+    getCurrentTimeString(),
+  )
   const [bookingEndTime, setBookingEndTime] = useState(getCurrentTimeString())
   const [bookingTitle, setBookingTitle] = useState('')
 
   // Selected room for details view
-  const [selectedRoom, setSelectedRoom] = useState<RoomWithBookings | null>(null)
+  const [selectedRoom, setSelectedRoom] = useState<RoomWithBookings | null>(
+    null,
+  )
 
   if (loading) return <div className="rooms-loading">Loading rooms...</div>
-  if (error) return <div className="rooms-error">Error loading rooms: {error.message}</div>
+  if (error)
+    return (
+      <div className="rooms-error">Error loading rooms: {error.message}</div>
+    )
 
   const rooms = data?.roomsWithBookings || []
 
@@ -118,7 +135,11 @@ export default function Rooms() {
   }
 
   const handleDeleteRoom = async (roomId: number) => {
-    if (!confirm('Are you sure you want to delete this room? All bookings will be cancelled.')) {
+    if (
+      !confirm(
+        'Are you sure you want to delete this room? All bookings will be cancelled.',
+      )
+    ) {
       return
     }
     try {
@@ -151,7 +172,14 @@ export default function Rooms() {
     if (!bookingRoom) return
 
     // Check availability first
-    if (!isRoomAvailable(bookingRoom.bookings, bookingDate, bookingStartTime, bookingEndTime)) {
+    if (
+      !isRoomAvailable(
+        bookingRoom.bookings,
+        bookingDate,
+        bookingStartTime,
+        bookingEndTime,
+      )
+    ) {
       alert('This room is not available at the selected time.')
       return
     }
@@ -171,7 +199,9 @@ export default function Rooms() {
       closeBookingModal()
     } catch (err) {
       console.error('Error booking room:', err)
-      alert('Failed to book room. The room may not be available at the selected time.')
+      alert(
+        'Failed to book room. The room may not be available at the selected time.',
+      )
     }
   }
 
@@ -281,7 +311,9 @@ export default function Rooms() {
                 )}
               </div>
               <div className="room-bookings-summary">
-                <span>{getUpcomingBookings(room.bookings).length} upcoming bookings</span>
+                <span>
+                  {getUpcomingBookings(room.bookings).length} upcoming bookings
+                </span>
               </div>
             </div>
           ))
@@ -298,13 +330,17 @@ export default function Rooms() {
           </div>
           <div className="room-details-meta">
             {selectedRoom.capacity && (
-              <span><Users size={16} /> Capacity: {selectedRoom.capacity}</span>
+              <span>
+                <Users size={16} /> Capacity: {selectedRoom.capacity}
+              </span>
             )}
             {selectedRoom.location && (
-              <span><MapPin size={16} /> {selectedRoom.location}</span>
+              <span>
+                <MapPin size={16} /> {selectedRoom.location}
+              </span>
             )}
           </div>
-          
+
           <div className="bookings-list">
             <h3>
               <Calendar size={18} />
@@ -317,13 +353,19 @@ export default function Rooms() {
                 {getUpcomingBookings(selectedRoom.bookings).map((booking) => (
                   <li key={booking.id} className="booking-item">
                     <div className="booking-info">
-                      <span className="booking-date">{formatDate(booking.date)}</span>
+                      <span className="booking-date">
+                        {formatDate(booking.date)}
+                      </span>
                       <span className="booking-time">
                         <Clock size={14} />
                         {booking.startTime} - {booking.endTime}
                       </span>
-                      {booking.title && <span className="booking-title">{booking.title}</span>}
-                      <span className="booking-user">Booked by: {booking.user.name}</span>
+                      {booking.title && (
+                        <span className="booking-title">{booking.title}</span>
+                      )}
+                      <span className="booking-user">
+                        Booked by: {booking.user.name}
+                      </span>
                     </div>
                     {(booking.userId === user?.id || isAdmin) && (
                       <button
@@ -339,8 +381,11 @@ export default function Rooms() {
               </ul>
             )}
           </div>
-          
-          <button className="btn-primary btn-book-full" onClick={() => openBookingModal(selectedRoom)}>
+
+          <button
+            className="btn-primary btn-book-full"
+            onClick={() => openBookingModal(selectedRoom)}
+          >
             <Calendar size={18} />
             Book This Room
           </button>
@@ -348,53 +393,64 @@ export default function Rooms() {
       )}
 
       {/* Room Create/Edit Modal */}
-      <Modal
-        isOpen={showRoomModal}
-        onClose={closeRoomModal}
-      >
-        <h3 className="modal-title">{editingRoom ? 'Edit Room' : 'Add Room'}</h3>
+      <Modal isOpen={showRoomModal} onClose={closeRoomModal}>
+        <h3 className="modal-title">
+          {editingRoom ? 'Edit Room' : 'Add Room'}
+        </h3>
         <form className="room-form" onSubmit={handleRoomSubmit}>
-            <div className="form-group">
-              <label htmlFor="room-name">Room Name *</label>
-              <input
-                id="room-name"
-                type="text"
-                value={roomName}
-                onChange={(e) => setRoomName(e.target.value)}
-                required
-                placeholder="e.g., Conference Room A"
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="room-capacity">Capacity</label>
-              <input
-                id="room-capacity"
-                type="number"
-                value={roomCapacity}
-                onChange={(e) => setRoomCapacity(e.target.value)}
-                min="1"
-                placeholder="e.g., 10"
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="room-location">Location</label>
-              <input
-                id="room-location"
-                type="text"
-                value={roomLocation}
-                onChange={(e) => setRoomLocation(e.target.value)}
-                placeholder="e.g., Building A, Floor 2"
-              />
-            </div>
-            <div className="form-actions">
-              <button type="button" className="btn-secondary" onClick={closeRoomModal}>
-                Cancel
-              </button>
-              <button type="submit" className="btn-primary" disabled={creating || updating}>
-                {creating || updating ? 'Saving...' : editingRoom ? 'Update Room' : 'Create Room'}
-              </button>
-            </div>
-          </form>
+          <div className="form-group">
+            <label htmlFor="room-name">Room Name *</label>
+            <input
+              id="room-name"
+              type="text"
+              value={roomName}
+              onChange={(e) => setRoomName(e.target.value)}
+              required
+              placeholder="e.g., Conference Room A"
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="room-capacity">Capacity</label>
+            <input
+              id="room-capacity"
+              type="number"
+              value={roomCapacity}
+              onChange={(e) => setRoomCapacity(e.target.value)}
+              min="1"
+              placeholder="e.g., 10"
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="room-location">Location</label>
+            <input
+              id="room-location"
+              type="text"
+              value={roomLocation}
+              onChange={(e) => setRoomLocation(e.target.value)}
+              placeholder="e.g., Building A, Floor 2"
+            />
+          </div>
+          <div className="form-actions">
+            <button
+              type="button"
+              className="btn-secondary"
+              onClick={closeRoomModal}
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="btn-primary"
+              disabled={creating || updating}
+            >
+              {creating || updating
+                ? 'Saving...'
+                : editingRoom
+                  ? 'Update Room'
+                  : 'Create Room'}
+            </button>
+          </div>
+        </form>
       </Modal>
 
       {/* Booking Modal */}
@@ -404,86 +460,96 @@ export default function Rooms() {
       >
         {bookingRoom && (
           <>
-          <h3 className="modal-title">Book {bookingRoom.name}</h3>
-          <form className="booking-form" onSubmit={handleBookingSubmit}>
-            <div className="form-group">
-              <label htmlFor="booking-title">Booking Title (optional)</label>
-              <input
-                id="booking-title"
-                type="text"
-                value={bookingTitle}
-                onChange={(e) => setBookingTitle(e.target.value)}
-                placeholder="e.g., Team Meeting"
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="booking-date">Date *</label>
-              <input
-                id="booking-date"
-                type="date"
-                value={bookingDate}
-                onChange={(e) => setBookingDate(e.target.value)}
-                min={getCurrentDateString()}
-                required
-              />
-            </div>
-            <div className="form-row">
+            <h3 className="modal-title">Book {bookingRoom.name}</h3>
+            <form className="booking-form" onSubmit={handleBookingSubmit}>
               <div className="form-group">
-                <label htmlFor="booking-start">Start Time *</label>
+                <label htmlFor="booking-title">Booking Title (optional)</label>
                 <input
-                  id="booking-start"
-                  type="time"
-                  value={bookingStartTime}
-                  onChange={(e) => setBookingStartTime(e.target.value)}
-                  required
+                  id="booking-title"
+                  type="text"
+                  value={bookingTitle}
+                  onChange={(e) => setBookingTitle(e.target.value)}
+                  placeholder="e.g., Team Meeting"
                 />
               </div>
               <div className="form-group">
-                <label htmlFor="booking-end">End Time *</label>
+                <label htmlFor="booking-date">Date *</label>
                 <input
-                  id="booking-end"
-                  type="time"
-                  value={bookingEndTime}
-                  onChange={(e) => setBookingEndTime(e.target.value)}
+                  id="booking-date"
+                  type="date"
+                  value={bookingDate}
+                  onChange={(e) => setBookingDate(e.target.value)}
+                  min={getCurrentDateString()}
                   required
                 />
               </div>
-            </div>
-            
-            {/* Show existing bookings for selected date */}
-            <div className="date-bookings">
-              <h4>Bookings on {formatDate(bookingDate)}:</h4>
-              {bookingRoom.bookings.filter((b) => b.date === bookingDate).length === 0 ? (
-                <p className="no-bookings-hint">No bookings - room is available all day</p>
-              ) : (
-                <ul>
-                  {bookingRoom.bookings
-                    .filter((b) => b.date === bookingDate)
-                    .sort((a, b) => a.startTime.localeCompare(b.startTime))
-                    .map((b) => (
-                      <li key={b.id} className="existing-booking">
-                        <Clock size={12} />
-                        {b.startTime} - {b.endTime}
-                        {b.title && ` - ${b.title}`}
-                      </li>
-                    ))}
-                </ul>
-              )}
-            </div>
-            
-            <div className="form-actions">
-              <button type="button" className="btn-secondary" onClick={closeBookingModal}>
-                Cancel
-              </button>
-              <button type="submit" className="btn-primary" disabled={booking}>
-                {booking ? 'Booking...' : 'Book Room'}
-              </button>
-            </div>
-          </form>
+              <div className="form-row">
+                <div className="form-group">
+                  <label htmlFor="booking-start">Start Time *</label>
+                  <input
+                    id="booking-start"
+                    type="time"
+                    value={bookingStartTime}
+                    onChange={(e) => setBookingStartTime(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="booking-end">End Time *</label>
+                  <input
+                    id="booking-end"
+                    type="time"
+                    value={bookingEndTime}
+                    onChange={(e) => setBookingEndTime(e.target.value)}
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Show existing bookings for selected date */}
+              <div className="date-bookings">
+                <h4>Bookings on {formatDate(bookingDate)}:</h4>
+                {bookingRoom.bookings.filter((b) => b.date === bookingDate)
+                  .length === 0 ? (
+                  <p className="no-bookings-hint">
+                    No bookings - room is available all day
+                  </p>
+                ) : (
+                  <ul>
+                    {bookingRoom.bookings
+                      .filter((b) => b.date === bookingDate)
+                      .sort((a, b) => a.startTime.localeCompare(b.startTime))
+                      .map((b) => (
+                        <li key={b.id} className="existing-booking">
+                          <Clock size={12} />
+                          {b.startTime} - {b.endTime}
+                          {b.title && ` - ${b.title}`}
+                        </li>
+                      ))}
+                  </ul>
+                )}
+              </div>
+
+              <div className="form-actions">
+                <button
+                  type="button"
+                  className="btn-secondary"
+                  onClick={closeBookingModal}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="btn-primary"
+                  disabled={booking}
+                >
+                  {booking ? 'Booking...' : 'Book Room'}
+                </button>
+              </div>
+            </form>
           </>
         )}
       </Modal>
     </div>
   )
 }
-

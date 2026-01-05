@@ -68,7 +68,9 @@ export default function RoomSelector({
               }
             }}
             disabled={!room.available}
-            title={!room.available ? 'Room is not available at this time' : undefined}
+            title={
+              !room.available ? 'Room is not available at this time' : undefined
+            }
           >
             <span className="room-option-icon">
               <Building2 size={16} />
@@ -77,10 +79,14 @@ export default function RoomSelector({
               <span className="room-option-name">{room.name}</span>
               <span className="room-option-meta">
                 {room.capacity && (
-                  <span><Users size={12} /> {room.capacity}</span>
+                  <span>
+                    <Users size={12} /> {room.capacity}
+                  </span>
                 )}
                 {room.location && (
-                  <span><MapPin size={12} /> {room.location}</span>
+                  <span>
+                    <MapPin size={12} /> {room.location}
+                  </span>
                 )}
               </span>
             </div>
@@ -93,4 +99,3 @@ export default function RoomSelector({
     </div>
   )
 }
-

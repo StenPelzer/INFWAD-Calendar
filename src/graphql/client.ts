@@ -1,8 +1,8 @@
 import {
   ApolloClient,
+  ApolloLink,
   HttpLink,
   InMemoryCache,
-  ApolloLink,
 } from '@apollo/client'
 
 const httpLink = new HttpLink({

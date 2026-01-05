@@ -1,29 +1,30 @@
 import { useState } from 'react'
-import { useAuth } from '@/context/AuthContext'
-import {
-  useGetRoomsWithBookings,
-  useCreateRoom,
-  useUpdateRoom,
-  useDeleteRoom,
-  useBookRoom,
-  useCancelRoomBooking,
-  isRoomAvailable,
-  type Room,
-  type RoomWithBookings,
-  type RoomBooking,
-} from '../services/roomsGraphql.service'
-import Modal from '@/components/Modal'
 import {
   Building2,
   Calendar,
   Clock,
+  Edit2,
   MapPin,
   Plus,
   Trash2,
-  Edit2,
   Users,
   X,
 } from 'lucide-react'
+import {
+  
+  
+  
+  isRoomAvailable,
+  useBookRoom,
+  useCancelRoomBooking,
+  useCreateRoom,
+  useDeleteRoom,
+  useGetRoomsWithBookings,
+  useUpdateRoom
+} from '../services/roomsGraphql.service'
+import type {Room, RoomBooking, RoomWithBookings} from '../services/roomsGraphql.service';
+import { useAuth } from '@/context/AuthContext'
+import Modal from '@/components/Modal'
 import '../assets/rooms.scss'
 
 function getCurrentDateString() {
@@ -219,7 +220,7 @@ export default function Rooms() {
   }
 
   // Filter upcoming bookings for a room
-  const getUpcomingBookings = (bookings: RoomBooking[]) => {
+  const getUpcomingBookings = (bookings: Array<RoomBooking>) => {
     const today = getCurrentDateString()
     return bookings
       .filter((b) => b.date >= today)

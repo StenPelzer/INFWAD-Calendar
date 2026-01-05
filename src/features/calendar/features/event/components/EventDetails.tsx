@@ -1,9 +1,10 @@
 import React, { useState } from 'react'
+import { Building2 } from 'lucide-react'
 import {
   useDeleteEvent,
-  useUpdateEvent,
   useJoinEvent,
   useLeaveEvent,
+  useUpdateEvent,
 } from '../services/eventsGraphql.service'
 import type { EventFromQuery } from '../services/eventsGraphql.service'
 import type { User } from '@/graphql/generated'
@@ -11,7 +12,6 @@ import '../assets/styles.scss'
 import AttendeeSelector from '@/features/calendar/components/AttendeeSelector'
 import RoomSelector from '@/features/calendar/components/RoomSelector'
 import { useAuth } from '@/context/AuthContext'
-import { Building2 } from 'lucide-react'
 
 type EventInput = {
   title: string

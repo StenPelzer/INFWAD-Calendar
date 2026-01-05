@@ -1,8 +1,8 @@
 import { useMemo } from 'react'
 import { Building2, MapPin, Users } from 'lucide-react'
 import {
-  useGetRoomsWithBookings,
   isRoomAvailable,
+  useGetRoomsWithBookings,
 } from '@/features/rooms/services/roomsGraphql.service'
 import './RoomSelector.scss'
 

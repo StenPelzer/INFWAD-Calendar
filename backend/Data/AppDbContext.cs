@@ -32,6 +32,8 @@ public class AppDbContext : DbContext
               .WithMany(r => r.Events)
               .HasForeignKey(e => e.RoomId)
               .OnDelete(DeleteBehavior.SetNull);
+            // Ignore computed property that is not a navigation property
+            eb.Ignore(e => e.Attendees);
         });
 
         // EventAttendee configuration (composite key)
@@ -53,6 +55,8 @@ public class AppDbContext : DbContext
         {
             eb.HasKey(g => g.Id);
             eb.Property(g => g.Name).IsRequired();
+            // Ignore computed property that is not a navigation property
+            eb.Ignore(g => g.Members);
         });
 
         // GroupMembership configuration (composite key)
@@ -103,6 +107,9 @@ public class AppDbContext : DbContext
               .IsRequired()
               .HasConversion<int>();
             eb.Property(u => u.PasswordHash).IsRequired();
+            // Ignore computed properties that are not navigation properties
+            eb.Ignore(u => u.Events);
+            eb.Ignore(u => u.Groups);
         });
 
         // UserOfficeAttendance configuration

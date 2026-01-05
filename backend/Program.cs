@@ -9,6 +9,13 @@ using INFWAD.Calendar.Backend.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Check if we're running in seed mode
+if (args.Length > 0 && args[0].ToLower() == "seed")
+{
+    await RunSeedAsync(builder.Configuration);
+    return;
+}
+
 // Configuration
 var configuration = builder.Configuration;
 
@@ -95,3 +102,35 @@ app.MapGet("/", () => Results.Redirect("/graphql"));
 app.MapGraphQL("/graphql");
 
 app.Run();
+
+static async Task RunSeedAsync(IConfiguration configuration)
+{
+    var mysqlConn = Environment.GetEnvironmentVariable("MYSQL_CONNECTION")
+                   ?? configuration.GetConnectionString("DefaultConnection");
+
+    if (string.IsNullOrEmpty(mysqlConn))
+    {
+        Console.Error.WriteLine("Error: Database connection string not found.");
+        Environment.Exit(1);
+    }
+
+    var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
+    optionsBuilder.UseMySql(mysqlConn, ServerVersion.AutoDetect(mysqlConn));
+
+    using var context = new AppDbContext(optionsBuilder.Options);
+    var authService = new AuthService(configuration);
+    var seeder = new DataSeeder(context, authService);
+
+    try
+    {
+        await seeder.SeedAsync();
+        Console.WriteLine("Seed operation completed successfully.");
+        Environment.Exit(0);
+    }
+    catch (Exception ex)
+    {
+        Console.Error.WriteLine($"Error seeding database: {ex.Message}");
+        Console.Error.WriteLine(ex.StackTrace);
+        Environment.Exit(1);
+    }
+}

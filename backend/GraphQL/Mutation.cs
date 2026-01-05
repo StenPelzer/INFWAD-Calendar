@@ -38,13 +38,23 @@ public class Mutation
         db.Users.Add(user);
         await db.SaveChangesAsync();
 
-        var token = authService.GenerateToken(user);
+        // Reload user with navigation properties for GraphQL serialization
+        await using var readDb = await dbFactory.CreateDbContextAsync();
+        var userWithNav = await readDb.Users
+            .AsNoTracking()
+            .Include(u => u.EventAttendees)
+                .ThenInclude(ea => ea.Event)
+            .Include(u => u.GroupMemberships)
+                .ThenInclude(gm => gm.Group)
+            .FirstAsync(u => u.Id == user.Id);
+
+        var token = authService.GenerateToken(userWithNav);
 
         return new AuthPayload
         {
             Success = true,
             Token = token,
-            User = user
+            User = userWithNav
         };
     }
 
@@ -55,7 +65,13 @@ public class Mutation
     {
         await using var db = await dbFactory.CreateDbContextAsync();
 
-        var user = await db.Users.FirstOrDefaultAsync(u => u.Email == input.Email);
+        var user = await db.Users
+            .AsNoTracking()
+            .Include(u => u.EventAttendees)
+                .ThenInclude(ea => ea.Event)
+            .Include(u => u.GroupMemberships)
+                .ThenInclude(gm => gm.Group)
+            .FirstOrDefaultAsync(u => u.Email == input.Email);
         if (user == null)
         {
             return new AuthPayload
